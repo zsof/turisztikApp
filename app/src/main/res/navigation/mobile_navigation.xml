@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_login">
+
+  <fragment
+      android:id="@+id/nav_login"
+      android:name="hu.bme.aut.android.turisztikapp.LoginFragment"
+      android:label="Login"
+      tools:layout="@layout/fragment_login">
+    <action android:id="@+id/action_login_to_map"
+        app:destination="@id/nav_map"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+  </fragment>
+
+  <fragment
+      android:id="@+id/nav_map"
+      android:name="hu.bme.aut.android.turisztikapp.MapFragment"
+      android:label="Map"
+      tools:layout="@layout/fragment_map" >
+    <action
+        android:id="@+id/action_map_to_newplace"
+        app:destination="@+id/new_place_dialog_fragment"/>
+    <action android:id="@+id/action_logout"
+        app:destination="@+id/nav_login"/>
+  </fragment>
+
+  <dialog
+      android:id="@+id/new_place_dialog_fragment"
+      android:name="hu.bme.aut.android.turisztikapp.AddNewPlaceDialogFragment">
+    <argument android:name="myarg" android:defaultValue="@null" />
+
+  </dialog>
+
+</navigation>
