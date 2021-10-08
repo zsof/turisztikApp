@@ -1,0 +1,2 @@
+# turisztikApp
+Szakdolgozat projekt
