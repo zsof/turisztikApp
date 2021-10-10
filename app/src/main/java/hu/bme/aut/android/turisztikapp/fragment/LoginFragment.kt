@@ -1,6 +1,5 @@
-package hu.bme.aut.android.turisztikapp
+package hu.bme.aut.android.turisztikapp.fragment
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import hu.bme.aut.android.turisztikapp.databinding.FragmentBaseBinding
+import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentLoginBinding
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 

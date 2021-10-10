@@ -9,11 +9,26 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="new_place">Új helyszín</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="t_rk_p">Térkép</string>
     <string name="be_ll_t_sok">Beállítások</string>
     <string name="kijelentkez_s">Kijelentkezés</string>
+    <string name="n_v">Név</string>
+    <string name="c_m">Cím</string>
+    <string name="le_r_s">Leírás</string>
+    <string name="kateg_ria">Kategória</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Törlés</string>
+    <string name="l_tnival_k">Látnivalók</string>
+
+    <string-array name="category_items">
+        <item>Múzeum</item>
+        <item>Könyvtár</item>
+        <item>Templom</item>
+        <item>Vár</item>
+        <item>Épület</item>
+    </string-array>
 </resources>

@@ -1,11 +1,10 @@
-package hu.bme.aut.android.turisztikapp
+package hu.bme.aut.android.turisztikapp.fragment
 
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 
@@ -16,21 +15,21 @@ import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentBaseBinding
 
 open class BaseFragment : Fragment() {
-    private var binding: FragmentBaseBinding? = null
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    //  private var binding: FragmentBaseBinding? = null
+    /*  override fun onCreateView(
+          inflater: LayoutInflater, container: ViewGroup?,
+          savedInstanceState: Bundle?
+      ): View? {
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_base, container, false)
-    }
+          // Inflate the layout for this fragment
+     //     return inflater.inflate(R.layout.fragment_base, container, false)
+      } */
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding= FragmentBaseBinding.bind(view)
+      //  binding= FragmentBaseBinding.bind(view)
 
-    }
+    } */
     private var progressDialog: ProgressDialog? = null
 
     private val firebaseUser: FirebaseUser?

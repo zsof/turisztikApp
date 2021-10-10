@@ -1,4 +1,4 @@
-package hu.bme.aut.android.turisztikapp
+package hu.bme.aut.android.turisztikapp.fragment
 
 import androidx.fragment.app.Fragment
 
@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import hu.bme.aut.android.turisztikapp.databinding.FragmentLoginBinding
+import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
 
 class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener{
@@ -47,7 +47,7 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
         googleMap.setOnMapClickListener {
             googleMap.addMarker(MarkerOptions().position(it).title("Actual position"+it.latitude))
             findNavController().navigate(
-                    R.id.action_map_to_newplace,
+                    R.id.action_map_to_add_new_place,
                     null,
                     navOptions {
                         anim {
@@ -58,9 +58,9 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
             )
         }
         options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
-            .compassEnabled(true)
-            .rotateGesturesEnabled(true)
-            .tiltGesturesEnabled(true)
+                .compassEnabled(true)
+                .rotateGesturesEnabled(true)
+                .tiltGesturesEnabled(true)
 
     }
 
@@ -68,14 +68,18 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_map, container, false)
-       // (activity as AppCompatActivity).setSupportActionBar(binding.fragmentMenu.appBarPosts.toolbar)
+        // (activity as AppCompatActivity).setSupportActionBar(binding.fragmentMenu.appBarPosts.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        ActionBarDrawerToggle(activity, binding.fragmentMenu.drawerLayout, binding.fragmentMenu.appBarPosts.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-    }
+        ActionBarDrawerToggle(activity, binding.fragmentMenu.drawerLayout,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        )
+    } // binding.fragmentMenu.appBarPosts.toolbar
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding=FragmentMapBinding.bind(view)
+        binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
 
@@ -84,13 +88,24 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_logout -> {
+            R.id.menu_logout -> {
                 FirebaseAuth.getInstance().signOut()
                 findNavController().navigate(
-                    R.id.action_logout,
-                    null
+                        R.id.action_map_to_logout,
+                        null
                 )
             }
+            R.id.menu_add_proba -> {
+                findNavController().navigate(
+                        R.id.action_map_to_add_new_place,
+                        null
+                )
+            }
+            R.id.menu_places ->
+                findNavController().navigate(
+                        R.id.action_map_to_place_list,
+                        null
+                )
         }
 
         binding.fragmentMenu.drawerLayout.closeDrawer(GravityCompat.START)

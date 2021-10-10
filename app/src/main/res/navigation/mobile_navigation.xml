@@ -3,38 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_login">
+    app:startDestination="@+id/nav_map_fragment">
 
   <fragment
-      android:id="@+id/nav_login"
-      android:name="hu.bme.aut.android.turisztikapp.LoginFragment"
+      android:id="@+id/nav_login_fragment"
+      android:name="hu.bme.aut.android.turisztikapp.fragment.LoginFragment"
       android:label="Login"
       tools:layout="@layout/fragment_login">
-    <action android:id="@+id/action_login_to_map"
-        app:destination="@id/nav_map"
+    <action
+        android:id="@+id/action_login_to_map"
+        app:destination="@id/nav_map_fragment"
         app:enterAnim="@anim/nav_default_enter_anim"
         app:exitAnim="@anim/nav_default_exit_anim"
         app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
   </fragment>
 
   <fragment
-      android:id="@+id/nav_map"
-      android:name="hu.bme.aut.android.turisztikapp.MapFragment"
+      android:id="@+id/nav_map_fragment"
+      android:name="hu.bme.aut.android.turisztikapp.fragment.MapFragment"
       android:label="Map"
-      tools:layout="@layout/fragment_map" >
+      tools:layout="@layout/fragment_map">
     <action
-        android:id="@+id/action_map_to_newplace"
-        app:destination="@+id/new_place_dialog_fragment"/>
-    <action android:id="@+id/action_logout"
-        app:destination="@+id/nav_login"/>
+        android:id="@+id/action_map_to_add_new_place"
+        app:destination="@+id/new_place_dialog_fragment" />
+    <action
+        android:id="@+id/action_map_to_logout"
+        app:destination="@+id/nav_login_fragment" />
+    <action
+        android:id="@+id/action_map_to_place_list"
+        app:destination="@+id/nav_placelist_fragment" />
   </fragment>
 
   <dialog
       android:id="@+id/new_place_dialog_fragment"
-      android:name="hu.bme.aut.android.turisztikapp.AddNewPlaceDialogFragment">
-    <argument android:name="myarg" android:defaultValue="@null" />
+      android:name="hu.bme.aut.android.turisztikapp.fragment.AddNewPlaceDialogFragment">
+    <argument
+        android:name="myarg"
+        android:defaultValue="@null" />
+    <action
+        android:id="@+id/ok_dialog_to_list"
+        app:destination="@+id/nav_placelist_fragment" />
+    <action
+        android:id="@+id/cancel_dialog_to_map"
+        app:destination="@+id/menu_map" />
 
   </dialog>
+
+  <fragment
+      android:id="@+id/nav_placelist_fragment"
+      android:name="hu.bme.aut.android.turisztikapp.fragment.PlaceListFragment"
+      android:label="PlaceList"
+      tools:layout="@layout/fragment_place_list"></fragment>
 
 </navigation>
