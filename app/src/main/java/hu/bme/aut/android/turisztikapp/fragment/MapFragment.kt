@@ -22,12 +22,11 @@ import com.google.firebase.auth.FirebaseAuth
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
 
-class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener{
+class MapFragment : BaseFragment() {
 
     val options = GoogleMapOptions()
 
     private lateinit var binding: FragmentMapBinding
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -38,43 +37,40 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        googleMap.uiSettings.isZoomControlsEnabled=true
-        googleMap.uiSettings.isCompassEnabled=true
-        googleMap.uiSettings.isMyLocationButtonEnabled=true
-        googleMap.setOnMapClickListener {
-            googleMap.addMarker(MarkerOptions().position(it).title("Actual position"+it.latitude))
-            findNavController().navigate(
-                    R.id.action_map_to_add_new_place,
-                    null,
-                    navOptions {
-                        anim {
-                            enter = android.R.animator.fade_in
-                            exit = android.R.animator.fade_out
-                        }
-                    }
+        val budapest = LatLng(47.497913, 19.040236)
+        googleMap.addMarker(MarkerOptions().position(budapest).title("Budapest"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(budapest))
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(11F))
+        googleMap.uiSettings.isZoomControlsEnabled = true
+        googleMap.uiSettings.isCompassEnabled = true
+        googleMap.uiSettings.isMyLocationButtonEnabled = true
+        googleMap.setOnMapLongClickListener {
+            googleMap.addMarker(
+                MarkerOptions().position(it).title("Actual position" + it.latitude + it.longitude)
             )
-        }
-        options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
-                .compassEnabled(true)
-                .rotateGesturesEnabled(true)
-                .tiltGesturesEnabled(true)
+            findNavController().navigate(
+                R.id.action_map_to_add_new_place,
+                null,
+                navOptions {
+                    anim {
+                        enter = android.R.animator.fade_in
+                        exit = android.R.animator.fade_out
+                    }
+                }
+            )
 
+        }
+        println(userEmail + "---------------------")
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_map, container, false)
-        // (activity as AppCompatActivity).setSupportActionBar(binding.fragmentMenu.appBarPosts.toolbar)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        ActionBarDrawerToggle(activity, binding.fragmentMenu.drawerLayout,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close
-        )
-    } // binding.fragmentMenu.appBarPosts.toolbar
+
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,33 +78,35 @@ class MapFragment : Fragment(),  NavigationView.OnNavigationItemSelectedListener
         binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+        binding.toolbar.inflateMenu(R.menu.menu_map)
+        binding.toolbar.setOnMenuItemClickListener {
 
-        binding.fragmentMenu.navView.setNavigationItemSelectedListener(this)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_logout -> {
-                FirebaseAuth.getInstance().signOut()
-                findNavController().navigate(
+            when (it.itemId) {
+                R.id.menu_map_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    findNavController().navigate(
                         R.id.action_map_to_logout,
                         null
-                )
-            }
-            R.id.menu_add_proba -> {
-                findNavController().navigate(
-                        R.id.action_map_to_add_new_place,
-                        null
-                )
-            }
-            R.id.menu_places ->
-                findNavController().navigate(
+                    )
+                    true
+                }
+                R.id.menu_map_places -> {
+                    findNavController().navigate(
                         R.id.action_map_to_place_list,
                         null
-                )
-        }
+                    )
+                    true
+                }
+                R.id.menu_map_add -> {
+                    findNavController().navigate(
+                        R.id.action_map_to_add_new_place,
+                        null
+                    )
+                    true
+                }
 
-        binding.fragmentMenu.drawerLayout.closeDrawer(GravityCompat.START)
-        return true
+                else -> true
+            }
+        }
     }
 }

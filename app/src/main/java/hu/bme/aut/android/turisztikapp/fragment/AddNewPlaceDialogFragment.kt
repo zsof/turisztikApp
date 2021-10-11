@@ -47,8 +47,17 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 .create()
     }
 
+
     private fun sendClick() {
         if (!validateForm()) {
+            /* if (binding.placeNameEditText.text.isEmpty() && binding.placeAddressEditText.text.isEmpty()) {
+                 Toast.makeText(activity, "Üres mező", Toast.LENGTH_LONG).show()
+                 findNavController().navigate(
+                     R.id.nav_new_place_dialog_fragment,
+                     null
+                 )
+                 return
+             }*/
             return
         }
 
@@ -64,7 +73,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private fun validateForm() = binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
-            && binding.placeDescEditText.validateNonEmpty()
+
 
     private fun uploadPlace(image: String? = null) {  //adatbázist összeköti a layout-tal
         val newPlace = Place(
@@ -142,11 +151,13 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     override fun onClick(p0: DialogInterface?, p1: Int) {
+
         sendClick()
         findNavController().navigate(
-                R.id.nav_placelist_fragment,
-                null
+            R.id.ok_dialog_to_list,
+            null
         )
+
     }
 
 }

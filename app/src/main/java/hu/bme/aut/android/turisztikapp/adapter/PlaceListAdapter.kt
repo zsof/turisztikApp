@@ -47,7 +47,7 @@ class PlaceListAdapter(private val context: Context) :
         if (places.image.isNullOrBlank()) {
             holder.imagePlace.visibility = View.GONE
         } else {
-            Glide.with(context)
+            Glide.with(holder.imagePlace)
                     .load(places.image)
                     .into(holder.imagePlace)
             holder.imagePlace.visibility = View.VISIBLE
@@ -66,7 +66,13 @@ class PlaceListAdapter(private val context: Context) :
         place ?: return
 
         placeList += (place)
-        submitList((placeList))
+        submitList(placeList)
+    }
+
+    fun removePlace(place: Place?) {
+        place ?: return
+        placeList -= (place)
+        submitList(placeList)
     }
 
     private fun setAnimation(viewToAnimate: View, position: Int) {

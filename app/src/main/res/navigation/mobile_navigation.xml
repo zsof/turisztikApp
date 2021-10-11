@@ -26,7 +26,7 @@
       tools:layout="@layout/fragment_map">
     <action
         android:id="@+id/action_map_to_add_new_place"
-        app:destination="@+id/new_place_dialog_fragment" />
+        app:destination="@+id/nav_new_place_dialog_fragment" />
     <action
         android:id="@+id/action_map_to_logout"
         app:destination="@+id/nav_login_fragment" />
@@ -36,7 +36,7 @@
   </fragment>
 
   <dialog
-      android:id="@+id/new_place_dialog_fragment"
+      android:id="@+id/nav_new_place_dialog_fragment"
       android:name="hu.bme.aut.android.turisztikapp.fragment.AddNewPlaceDialogFragment">
     <argument
         android:name="myarg"
@@ -44,16 +44,29 @@
     <action
         android:id="@+id/ok_dialog_to_list"
         app:destination="@+id/nav_placelist_fragment" />
-    <action
-        android:id="@+id/cancel_dialog_to_map"
-        app:destination="@+id/menu_map" />
+      <action
+          android:id="@+id/cancel_dialog_to_map"
+          app:destination="@+id/nav_map_fragment" />
 
   </dialog>
 
-  <fragment
-      android:id="@+id/nav_placelist_fragment"
-      android:name="hu.bme.aut.android.turisztikapp.fragment.PlaceListFragment"
-      android:label="PlaceList"
-      tools:layout="@layout/fragment_place_list"></fragment>
+    <fragment
+        android:id="@+id/nav_placelist_fragment"
+        android:name="hu.bme.aut.android.turisztikapp.fragment.PlaceListFragment"
+        android:label="PlaceList"
+        tools:layout="@layout/fragment_place_list">
+        <action
+            android:id="@+id/action_placelist_to_add_new_place"
+            app:destination="@+id/nav_new_place_dialog_fragment" />
+        <action
+            android:id="@+id/action_placelis_to_logout"
+            app:destination="@+id/nav_login_fragment" />
+        <action
+            android:id="@+id/action_placelist_to_place_list"
+            app:destination="@+id/nav_placelist_fragment" />
+        <action
+            android:id="@+id/action_placelist_to_map"
+            app:destination="@+id/nav_map_fragment" />
+    </fragment>
 
 </navigation>

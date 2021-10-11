@@ -24,8 +24,7 @@ class LoginFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_login, container, false)
-        return root
+         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,6 +33,7 @@ class LoginFragment : BaseFragment() {
         binding= FragmentLoginBinding.bind(view)
         binding.btnRegister.setOnClickListener { registerClick() }
         binding.btnLogin.setOnClickListener { loginClick() }
+
     }
 
 
@@ -80,10 +80,6 @@ class LoginFragment : BaseFragment() {
                 hideProgressDialog()
 
                 toast( "Login is successful")
-             /*   childFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentLoginContainer, MapFragment() )
-                    .commit() */
-               // findNavController().navigate(R.id.action_login_to_map)
                 findNavController().navigate(
                         R.id.action_login_to_map,
                         null,
@@ -102,5 +98,4 @@ class LoginFragment : BaseFragment() {
                 toast("Login is not successful")
             }
     }
-
 }

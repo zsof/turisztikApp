@@ -86,7 +86,5 @@
                 android:src="@drawable/ic_gallery" />
 
         </LinearLayout>
-
-
     </LinearLayout>
 </ScrollView>
