@@ -24,15 +24,18 @@
       android:name="hu.bme.aut.android.turisztikapp.fragment.MapFragment"
       android:label="Map"
       tools:layout="@layout/fragment_map">
-    <action
-        android:id="@+id/action_map_to_add_new_place"
-        app:destination="@+id/nav_new_place_dialog_fragment" />
-    <action
-        android:id="@+id/action_map_to_logout"
-        app:destination="@+id/nav_login_fragment" />
-    <action
-        android:id="@+id/action_map_to_place_list"
-        app:destination="@+id/nav_placelist_fragment" />
+      <action
+          android:id="@+id/action_map_to_add_new_place"
+          app:destination="@+id/nav_new_place_dialog_fragment" />
+      <action
+          android:id="@+id/action_map_to_logout"
+          app:destination="@+id/nav_login_fragment" />
+      <action
+          android:id="@+id/action_map_to_place_list"
+          app:destination="@+id/nav_placelist_fragment" />
+      <action
+          android:id="@+id/action_map_to_details"
+          app:destination="@+id/nav_details_fragment" />
   </fragment>
 
   <dialog
@@ -67,6 +70,20 @@
         <action
             android:id="@+id/action_placelist_to_map"
             app:destination="@+id/nav_map_fragment" />
+        <action
+            android:id="@+id/action_placelist_to_details"
+            app:destination="@+id/nav_details_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_details_fragment"
+        android:name="hu.bme.aut.android.turisztikapp.fragment.DetailsFragment"
+        android:label="Details"
+        tools:layout="@layout/fragment_details">
+        <argument
+            android:name="letter"
+            app:argType="hu.bme.aut.android.turisztikapp.data.Place" />
     </fragment>
 
 </navigation>

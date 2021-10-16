@@ -1,32 +1,30 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
-import androidx.fragment.app.Fragment
-
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.gms.maps.*
-
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
+import java.util.*
 
-class MapFragment : BaseFragment() {
+
+class MapFragment : BaseFragment(), GoogleMap.OnMarkerClickListener {
 
     val options = GoogleMapOptions()
 
     private lateinit var binding: FragmentMapBinding
+    private var myMarker: Marker? = null
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -39,13 +37,15 @@ class MapFragment : BaseFragment() {
          */
         val budapest = LatLng(47.497913, 19.040236)
         googleMap.addMarker(MarkerOptions().position(budapest).title("Budapest"))
+        // .icon(BitmapDescriptorFactory.fromResource(R.drawable.dollar ))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(budapest))
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(11F))
+
         googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.isCompassEnabled = true
         googleMap.uiSettings.isMyLocationButtonEnabled = true
         googleMap.setOnMapLongClickListener {
-            googleMap.addMarker(
+            myMarker = googleMap.addMarker(
                 MarkerOptions().position(it).title("Actual position" + it.latitude + it.longitude)
             )
             findNavController().navigate(
@@ -60,7 +60,28 @@ class MapFragment : BaseFragment() {
             )
 
         }
+        googleMap.setOnMarkerClickListener(this)
+
+
         println(userEmail + "---------------------")
+
+        /* val geocoder: Geocoder
+         val addresses: List<Address>
+         geocoder = Geocoder(context, Locale.getDefault())
+
+         addresses = geocoder.getFromLocation(
+             latitude,
+             longitude,
+             1
+         )
+         val address: String =
+             addresses[0].getAddressLine(0)
+
+         val city: String = addresses[0].getLocality()
+         val state: String = addresses[0].getAdminArea()
+         val country: String = addresses[0].getCountryName()
+         val postalCode: String = addresses[0].getPostalCode()
+         val knownName: String = addresses[0].getFeatureName()*/
     }
 
     override fun onCreateView(
@@ -78,8 +99,8 @@ class MapFragment : BaseFragment() {
         binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        binding.toolbar.inflateMenu(R.menu.menu_map)
-        binding.toolbar.setOnMenuItemClickListener {
+        binding.toolbarMap.inflateMenu(R.menu.menu_map)
+        binding.toolbarMap.setOnMenuItemClickListener {
 
             when (it.itemId) {
                 R.id.menu_map_logout -> {
@@ -108,5 +129,17 @@ class MapFragment : BaseFragment() {
                 else -> true
             }
         }
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        if (marker != null) {
+            if (marker.equals(myMarker))
+                findNavController().navigate(
+                    R.id.action_map_to_details,
+                    null
+                )
+            println("list fragment elv--------")
+        }
+        return true
     }
 }

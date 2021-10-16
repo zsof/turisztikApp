@@ -54,7 +54,8 @@
         <Spinner
             android:id="@+id/placeCategorySpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:entries="@array/category_items" />
 
         <RatingBar
             android:id="@+id/placeRatingBar"

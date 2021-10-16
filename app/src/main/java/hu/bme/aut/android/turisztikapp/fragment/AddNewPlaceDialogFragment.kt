@@ -10,20 +10,26 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
+import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.DialogAddNewPlaceBinding
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.*
+import kotlin.collections.ArrayList
+
 
 class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
 
@@ -32,6 +38,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private lateinit var binding: DialogAddNewPlaceBinding
+    // private lateinit var categorySpinner: Spinner
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreate(savedInstanceState)
@@ -39,26 +46,26 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         binding.placeCameraButton.setOnClickListener {
             makePhotoClick()
         }
+
         return AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.new_place))
-                .setView(binding.root)
-                .setPositiveButton(R.string.ok, this)
+            .setTitle(getString(R.string.new_place))
+            .setView(binding.root)
+            .setPositiveButton(R.string.ok) { dialogInterface, i ->
+                sendClick()
+            }
                 .setNegativeButton(R.string.cancel, null)
                 .create()
+
     }
 
 
     private fun sendClick() {
         if (!validateForm()) {
-            /* if (binding.placeNameEditText.text.isEmpty() && binding.placeAddressEditText.text.isEmpty()) {
-                 Toast.makeText(activity, "Üres mező", Toast.LENGTH_LONG).show()
-                 findNavController().navigate(
-                     R.id.nav_new_place_dialog_fragment,
-                     null
-                 )
-                 return
-             }*/
-            return
+            Toast.makeText(activity, "Üres név vagy cím", Toast.LENGTH_LONG).show()
+            findNavController().navigate(
+                R.id.nav_new_place_dialog_fragment,
+                null
+            )
         }
 
         if (binding.placeCameraButton.visibility != View.VISIBLE) {
@@ -66,10 +73,15 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         } else {
             try {
                 uploadPlaceWithImage()
+                findNavController().navigate(
+                    R.id.ok_dialog_to_list,
+                    null
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+
     }
 
     private fun validateForm() = binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
@@ -77,34 +89,35 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
     private fun uploadPlace(image: String? = null) {  //adatbázist összeköti a layout-tal
         val newPlace = Place(
-                id = UUID.randomUUID().toString(),
-                name = binding.placeNameEditText.text.toString(),
-                address = binding.placeAddressEditText.text.toString(),
-                description = binding.placeDescEditText.text.toString(),
-                rate = binding.placeRatingBar.rating,
-                image = image)
+            id = UUID.randomUUID().toString(),
+            name = binding.placeNameEditText.text.toString(),
+            address = binding.placeAddressEditText.text.toString(),
+            description = binding.placeDescEditText.text.toString(),
+            rate = binding.placeRatingBar.rating,
+            image = image,
+            category = Category.getByOrdinal(binding.placeCategorySpinner.selectedItemPosition)
+        )
 
-        /* category = DishItem.Category.getByOrdinal(categorySpinner.selectedItemPosition)
-            ?: DishItem.Category.Előétel,    //data-layout */
-        /*categorySpinner = binding.placeCategorySpinner
-       categorySpinner.setAdapter(
+        binding.placeCategorySpinner.adapter = context?.let {
             ArrayAdapter(
-                requireContext(),
+                it.applicationContext,
                 android.R.layout.simple_spinner_dropdown_item,
                 resources.getStringArray(R.array.category_items)
             )
-        ) */
+        }
+
 
         val db = Firebase.firestore
 
         db.collection("places")
-                .add(newPlace)
-                .addOnSuccessListener {
+            .add(newPlace)
+            .addOnSuccessListener {
 
-                    // Toast.makeText(activity, "Place created", Toast.LENGTH_LONG).show()
-                }
+                // Toast.makeText(activity, "Place created", Toast.LENGTH_LONG).show()
+            }
                 .addOnFailureListener { e -> Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show() }
     }
+
 
     private fun makePhotoClick() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

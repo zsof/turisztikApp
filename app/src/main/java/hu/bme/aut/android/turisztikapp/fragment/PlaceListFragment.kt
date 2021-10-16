@@ -10,7 +10,15 @@ import androidx.navigation.fragment.findNavController
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navOptions
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
@@ -22,14 +30,18 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.adapter.PlaceListAdapter
+import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 
 
-class PlaceListFragment : BaseFragment(), OnNavigationItemSelectedListener {
+class PlaceListFragment : BaseFragment(),
+    OnNavigationItemSelectedListener/*, PlaceListAdapter.OnItemCLickListener */ {
 
     private lateinit var binding: FragmentPlaceListBinding
     private lateinit var placeListAdapter: PlaceListAdapter
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,13 +52,15 @@ class PlaceListFragment : BaseFragment(), OnNavigationItemSelectedListener {
 
         // (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)   //ne legyen pötty
 
+
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPlaceListBinding.bind(view)
 
-        placeListAdapter = PlaceListAdapter((activity as AppCompatActivity).applicationContext)
+        placeListAdapter = PlaceListAdapter()
         binding.placeList.layoutManager = LinearLayoutManager(context).apply {
             reverseLayout = true
             stackFromEnd = true
@@ -61,14 +75,18 @@ class PlaceListFragment : BaseFragment(), OnNavigationItemSelectedListener {
         dividerItemDecoration.setDrawable(context?.getDrawable(R.drawable.recyclerview_divider)!!)
         binding.placeList.addItemDecoration(dividerItemDecoration)
 
-        ActionBarDrawerToggle(
-            activity, binding.fragmentMenu.drawerLayout,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        binding.fragmentMenu.navView.setNavigationItemSelectedListener(this)
+        navHostFragment =
+            (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        binding.navView.setNavigationItemSelectedListener(this)
+
         initPostsListener()
+
     }
+
 
     private fun initPostsListener() {
         val db = Firebase.firestore
@@ -116,15 +134,17 @@ class PlaceListFragment : BaseFragment(), OnNavigationItemSelectedListener {
                 )
         }
 
-        binding.fragmentMenu.drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-    /* override fun onBackPressed() {  //visszagomb működjön!!
-        if (binding.fragmentMenu.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.fragmentMenu.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            onBackPressed()
-        }
-    }*/
+
+
+    /* override fun onBackPressed() {
+         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+             binding.drawerLayout.closeDrawer(GravityCompat.START)
+         } else {
+             super.onBackPressed()
+         }
+     }*/
 }
 
