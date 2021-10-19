@@ -1,15 +1,23 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
+import android.app.Activity
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentLoginBinding
+import hu.bme.aut.android.turisztikapp.extension.hideKeyboard
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 
 
@@ -34,6 +42,7 @@ class LoginFragment : BaseFragment() {
         binding.btnRegister.setOnClickListener { registerClick() }
         binding.btnLogin.setOnClickListener { loginClick() }
 
+
     }
 
 
@@ -46,6 +55,7 @@ class LoginFragment : BaseFragment() {
         }
 
         showProgressDialog()
+        this.hideKeyboard()
 
         firebaseAuth
             .createUserWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
@@ -73,17 +83,20 @@ class LoginFragment : BaseFragment() {
         }
 
         showProgressDialog()
-
+        this.hideKeyboard()
         firebaseAuth
-            .signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
+            .signInWithEmailAndPassword(
+                binding.etEmail.text.toString(),
+                binding.etPassword.text.toString()
+            )
             .addOnSuccessListener {
                 hideProgressDialog()
 
-                toast( "Login is successful")
+                toast("Login is successful")
                 findNavController().navigate(
-                        R.id.action_login_to_map,
-                        null,
-                        navOptions {
+                    R.id.action_login_to_map,
+                    null,
+                    navOptions {
                             anim {
                                 enter = android.R.animator.fade_in
                                 exit = android.R.animator.fade_out

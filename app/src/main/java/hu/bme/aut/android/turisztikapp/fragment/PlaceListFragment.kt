@@ -36,7 +36,7 @@ import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 
 
 class PlaceListFragment : BaseFragment(),
-    OnNavigationItemSelectedListener/*, PlaceListAdapter.OnItemCLickListener */ {
+    OnNavigationItemSelectedListener {
 
     private lateinit var binding: FragmentPlaceListBinding
     private lateinit var placeListAdapter: PlaceListAdapter
@@ -61,10 +61,7 @@ class PlaceListFragment : BaseFragment(),
         binding = FragmentPlaceListBinding.bind(view)
 
         placeListAdapter = PlaceListAdapter()
-        binding.placeList.layoutManager = LinearLayoutManager(context).apply {
-            reverseLayout = true
-            stackFromEnd = true
-        }
+        binding.placeList.layoutManager = LinearLayoutManager(context)
         binding.placeList.adapter = placeListAdapter
 
 
@@ -139,12 +136,5 @@ class PlaceListFragment : BaseFragment(),
     }
 
 
-    /* override fun onBackPressed() {
-         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-             binding.drawerLayout.closeDrawer(GravityCompat.START)
-         } else {
-             super.onBackPressed()
-         }
-     }*/
 }
 

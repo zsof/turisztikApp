@@ -21,7 +21,8 @@
         <EditText
             android:id="@+id/placeNameEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,7 +33,8 @@
         <EditText
             android:id="@+id/placeAddressEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -43,7 +45,8 @@
         <EditText
             android:id="@+id/placeDescEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences|textMultiLine" />
 
         <TextView
             android:layout_width="wrap_content"

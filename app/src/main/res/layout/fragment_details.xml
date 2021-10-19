@@ -1,102 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
-
 
     <ImageView
         android:id="@+id/detailsImage"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_menu_gallery" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/kep"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nameDetailsText" />
 
     <TextView
         android:id="@+id/nameDetailsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
-        tools:text="Nemzeti Múzeum"
         android:textSize="30sp"
         android:textStyle="bold"
-
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailsImage"
+        tools:text="Nemzeti Múzeum" />
 
     <TextView
         android:id="@+id/addressDetailsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
-        tools:text="1146 Kodály utca 4"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nameDetailsText"
+        tools:text="1146 Kodály utca 4" />
 
     <TextView
         android:id="@+id/descDetailsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
-        tools:text="Nagyon szép múzeum"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addressDetailsText"
+        tools:text="Nagyon szép múzeum" />
 
     <TextView
         android:id="@+id/rateDetailsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
-        tools:text="4.0"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/descDetailsText"
+        tools:text="4.0" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/commentDetailsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="Hozzászólások:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rateDetailsText" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/placeComment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:maxHeight="200dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/commentDetailsText"
+        app:layout_constraintBottom_toTopOf="@id/commentDetailsEditText"
+        tools:listitem="@layout/row_comment" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:padding="20dp"
-                android:text="Hozzászólás:"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/commentDetailsText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                tools:text="Tényleg szép"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-    </ScrollView>
 
     <EditText
-        android:id="@+id/writeCommentDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="Hozzászólás:"
-        android:textSize="20sp" />
+        android:id="@+id/commentDetailsEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Hozzászólás"
+        android:inputType="textCapSentences"
+        app:layout_constraintTop_toBottomOf="@id/placeComment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/commentSendImage"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-</LinearLayout>
+    <ImageButton
+        android:id="@+id/commentSendImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
+        app:layout_constraintTop_toBottomOf="@id/placeComment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_send" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

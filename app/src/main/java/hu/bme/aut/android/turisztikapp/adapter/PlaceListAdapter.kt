@@ -2,10 +2,12 @@ package hu.bme.aut.android.turisztikapp.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.navigation.findNavController
@@ -17,6 +19,7 @@ import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.RowPlacesBinding
+
 import hu.bme.aut.android.turisztikapp.fragment.PlaceListFragmentDirections
 
 
@@ -32,6 +35,7 @@ class PlaceListAdapter() :
         val textPlaceAddress: TextView = binding.rowPlaceAdress
         val imagePlace: ImageView = binding.rowPlaceImage
         val imagePlaceCategory: ImageView = binding.rowPlaceCategory
+        val ratePlace: TextView = binding.rowPlaceRate
         var placeItem: Place? = null
 
     }
@@ -51,10 +55,11 @@ class PlaceListAdapter() :
         val place = getItem(position)
         holder.placeItem = place
         holder.textPlaceName.text = place.name
+        holder.ratePlace.text = place.rate.toString()
         holder.textPlaceAddress.text = place.address
         getImageResource(place.category)?.let { holder.imagePlaceCategory.setImageResource(it) }
 
-        holder.textPlaceName.setOnClickListener {
+        holder.itemView.setOnClickListener {
             val action =
                 PlaceListFragmentDirections.actionPlacelistToDetails(letter = place)
             println(place.id)
@@ -81,8 +86,9 @@ class PlaceListAdapter() :
             holder.imagePlace.visibility = View.VISIBLE
         }
         if (position % 2 == 1) {
-            holder.itemView.setBackgroundColor(Color.parseColor("#b3f5d4"));
-            //  holder.imageView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            // holder.itemView.setBackgroundColor(Color.parseColor("#b3f5d4"));
+            holder.itemView.setBackgroundColor(R.drawable.square_background_text);
+
         } else {
             holder.itemView.setBackgroundColor(Color.parseColor("#cdfaf4"));
             //  holder.imageView.setBackgroundColor(Color.parseColor("#FFFAF8FD"));
@@ -101,8 +107,6 @@ class PlaceListAdapter() :
     fun addPlace(place: Place?) {
         place ?: return
         placeList += (place)
-        placeList.sortBy { it.name.toUpperCase() }
-        placeList.reverse()
         submitList(placeList)
 
     }
@@ -110,8 +114,6 @@ class PlaceListAdapter() :
     fun removePlace(place: Place?) {
         place ?: return
         placeList -= (place)
-        placeList.sortBy { it.name.toString() }
-        placeList.reverse()
         submitList(placeList)
     }
 

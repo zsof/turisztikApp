@@ -9,6 +9,10 @@
         android:icon="@drawable/map"
         android:title="@string/t_rk_p" />
     <item
+        android:id="@+id/menu_add_proba"
+        android:icon="@drawable/ic_logout"
+        android:title="Hozzáad" />
+    <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/be_ll_t_sok" />
@@ -16,8 +20,5 @@
         android:id="@+id/menu_logout"
         android:icon="@drawable/ic_logout"
         android:title="@string/kijelentkez_s" />
-    <item
-        android:id="@+id/menu_add_proba"
-        android:icon="@drawable/ic_logout"
-        android:title="Hozzáad" />
+
 </menu>

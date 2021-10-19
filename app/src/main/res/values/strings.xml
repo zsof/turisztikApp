@@ -24,6 +24,7 @@
     <string name="ok">Ok</string>
     <string name="cancel">Törlés</string>
     <string name="l_tnival_k">Látnivalók</string>
+    <string name="contacts_permission_explanation">The application needs to access your contacts to display them.</string>
 
     <string-array name="category_items">
         <item>Múzeum</item>
