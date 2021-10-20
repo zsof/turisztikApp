@@ -49,10 +49,6 @@ class PlaceListFragment : BaseFragment(),
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_place_list, container, false)
-
-        // (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)   //ne legyen pötty
-
-
     }
 
 

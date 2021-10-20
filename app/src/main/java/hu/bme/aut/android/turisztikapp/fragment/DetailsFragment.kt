@@ -2,6 +2,7 @@ package hu.bme.aut.android.turisztikapp.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
@@ -10,9 +11,16 @@ import android.widget.RatingBar
 import android.widget.RatingBar.OnRatingBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -27,11 +35,13 @@ import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.util.*
 
 
-class DetailsFragment : BaseFragment() {
+class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: FragmentDetailsBinding //fragment binding!!
     private var place: Place? = null
     private lateinit var commentAdapter: CommentAdapter
     private var rateSum: Float = 0F
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
     companion object {
         val LETTER = "letter"
@@ -71,7 +81,7 @@ class DetailsFragment : BaseFragment() {
         }
 
 
-
+        setToolbar()
         displayPlaceData()
         initPostsListener()
 
@@ -145,6 +155,16 @@ class DetailsFragment : BaseFragment() {
 
     }
 
+    private fun setToolbar() {
+        navHostFragment =
+            (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        binding.navView.setNavigationItemSelectedListener(this)
+    }
+
     private fun showDialog() {
         val popDialog = AlertDialog.Builder(requireContext())
         val linearLayout = LinearLayout(context)
@@ -167,7 +187,6 @@ class DetailsFragment : BaseFragment() {
         rating.onRatingBarChangeListener =
             OnRatingBarChangeListener { ratingBar, v, b -> rateSum += v }
 
-
         // Button OK
         popDialog.setPositiveButton(android.R.string.ok) { dialoginterface, i ->
             binding.rateDetailsText.text = rateSum.toString()
@@ -177,6 +196,38 @@ class DetailsFragment : BaseFragment() {
             .setNegativeButton("Cancel", null)
         popDialog.create()
         popDialog.show()
+    }
+
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                findNavController().navigate(
+                    R.id.action_details_to_logout,
+                    null
+                )
+            }
+            R.id.menu_add_proba -> {
+                findNavController().navigate(
+                    R.id.action_details_to_add_new_place,
+                    null
+                )
+            }
+            R.id.menu_places ->
+                findNavController().navigate(
+                    R.id.action_details_to_place_list,
+                    null
+                )
+            R.id.menu_map ->
+                findNavController().navigate(
+                    R.id.action_details_to_map,
+                    null
+                )
+        }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
 }

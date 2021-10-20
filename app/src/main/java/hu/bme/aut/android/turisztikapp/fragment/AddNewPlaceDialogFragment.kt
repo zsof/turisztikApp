@@ -1,21 +1,21 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -31,6 +31,8 @@ import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.DialogAddNewPlaceBinding
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
 
@@ -54,7 +56,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             handleReadContactsPermission()
         }
 
-        return AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.new_place))
             .setView(binding.root)
             .setPositiveButton(R.string.ok) { dialogInterface, i ->
@@ -63,21 +65,20 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             .setNegativeButton(R.string.cancel, null)
             .create()
 
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_MODE_CHANGED)  //scrollable alert
+        return dialog
     }
 
 
     private fun sendClick() {
         if (!validateForm()) {
             Toast.makeText(activity, "Üres név vagy cím", Toast.LENGTH_LONG).show()
-            findNavController().navigate(
-                R.id.nav_new_place_dialog_fragment,
-                null
-            )
+            return
         }
 
         if (binding.placeCameraButton.visibility != View.VISIBLE) {
             uploadPlace()
-        } else {
+        } else if (binding.placeCameraButton.visibility == View.VISIBLE) {
             try {
                 uploadPlaceWithImage()
                 findNavController().navigate(
@@ -89,15 +90,29 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             }
         }
 
+        if (binding.placeGalleryButton.visibility != View.VISIBLE) {
+            uploadPlace()
+        } else if (binding.placeGalleryButton.visibility == View.VISIBLE) try {
+            uploadPlaceWithImageFromGallery()
+            findNavController().navigate(
+                R.id.ok_dialog_to_list,
+                null
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    private fun validateForm() = binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
+
+    private fun validateForm() =
+        binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
 
 
     private fun uploadPlace(image: String? = null) {  //adatbázist összeköti a layout-tal
         val newPlace = Place(
             id = UUID.randomUUID().toString(),
-            name = binding.placeNameEditText.text.toString().capitalize(),
+            name = binding.placeNameEditText.text.toString()
+                .replaceFirstChar { it.uppercase() },
             address = binding.placeAddressEditText.text.toString().capitalize(),
             description = binding.placeDescEditText.text.toString().capitalize(),
             rate = binding.placeRatingBar.rating,
@@ -139,26 +154,81 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         startActivityForResult(intent, REQUEST_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK) {
+    override fun onActivityResult(reqCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(reqCode, resultCode, data)
+        if (resultCode != RESULT_OK) {
             return
         }
+        if (reqCode == REQUEST_CODE) {
+            try {
+                val imageBitmap = data?.extras?.get("data") as? Bitmap
+                binding.placeCameraButton.setImageBitmap(imageBitmap)
+                binding.placeCameraButton.visibility = View.VISIBLE
 
-        if (requestCode == REQUEST_CODE) {
-            val imageBitmap = data?.extras?.get("data") as? Bitmap ?: return
-            binding.placeCameraButton.setImageBitmap(imageBitmap)
-            binding.placeCameraButton.visibility = View.VISIBLE
-            binding.placeGalleryButton.setImageURI(data?.data)
-            binding.placeGalleryButton.visibility = View.VISIBLE
+                val imageUri = data?.data
+                val imageStream: InputStream? = imageUri?.let {
+                    activity?.applicationContext?.contentResolver?.openInputStream(
+                        it
+                    )
+                }
+                val selectedImage = BitmapFactory.decodeStream(imageStream)
+                binding.placeGalleryButton.setImageBitmap(selectedImage)
+                binding.placeGalleryButton.visibility = View.VISIBLE
+
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show()
+            }
+            /* try {   //scaleBitmappel nem fut le a kamerából!! való feltöltés
+                 val imageUri = data?.data
+                 val imageStream: InputStream? = imageUri?.let {
+                     activity?.applicationContext?.contentResolver?.openInputStream(
+                         it
+                     )
+                 }
+                 val selectedImage = BitmapFactory.decodeStream(imageStream)
+                 binding.placeGalleryButton.setImageBitmap(scaleBitmap(selectedImage,150, 140))
+                 binding.placeGalleryButton.visibility = View.VISIBLE
+             }
+             catch (e: FileNotFoundException) {
+                 e.printStackTrace()
+                 Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show()
+             }*/
+        } else {
+            Toast.makeText(context, "You haven't picked Image", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun uploadPlaceWithImage() {
         val bitmap: Bitmap = (binding.placeCameraButton.drawable as BitmapDrawable).bitmap
-        val bitmapGallery: Bitmap = (binding.placeGalleryButton.drawable as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val imageInBytes = baos.toByteArray()
+
+        val storageReference = FirebaseStorage.getInstance().reference
+        val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
+        val newImageRef = storageReference.child("images/$newImageName")
+
+        newImageRef.putBytes(imageInBytes)
+            .addOnFailureListener { exception ->
+                //  Toast.makeText(activity,exception.message, Toast.LENGTH_LONG).show()
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
+                }
+
+                newImageRef.downloadUrl
+            }
+            .addOnSuccessListener { downloadUri ->
+                uploadPlace(downloadUri.toString())
+            }
+    }
+
+    private fun uploadPlaceWithImageFromGallery() {
+        val bitmapGallery: Bitmap =
+            (binding.placeGalleryButton.drawable as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
         bitmapGallery.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val imageInBytes = baos.toByteArray()
 
@@ -167,31 +237,28 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         val newImageRef = storageReference.child("images/$newImageName")
 
         newImageRef.putBytes(imageInBytes)
-                .addOnFailureListener { exception ->
-                    //  Toast.makeText(activity,exception.message, Toast.LENGTH_LONG).show()
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
                 }
-                .continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { throw it }
-                    }
 
-                    newImageRef.downloadUrl
-                }
-                .addOnSuccessListener { downloadUri ->
-                    uploadPlace(downloadUri.toString())
-                }
+                newImageRef.downloadUrl
+            }
+            .addOnSuccessListener { downloadUri ->
+                uploadPlace(downloadUri.toString())
+            }
     }
 
     override fun onClick(p0: DialogInterface?, p1: Int) {
-
         sendClick()
         findNavController().navigate(
             R.id.ok_dialog_to_list,
             null
         )
-
     }
-
 
     private fun showRationaleDialog(
         /*   @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Attention!",
@@ -216,32 +283,26 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Should we show an explanation?
+
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     activity as AppCompatActivity,
-                    Manifest.permission.READ_CONTACTS
+                    Manifest.permission.READ_EXTERNAL_STORAGE
                 )
             ) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
                 showRationaleDialog(
                     //  explanation = R.string.contacts_permission_explanation,
-                    onPositiveButton = this::requestContactsPermission
+                    onPositiveButton = this::requestExternalStoragePermission
                 )
 
             } else {
-                // No explanation needed, we can request the permission.
-                requestContactsPermission()
+                requestExternalStoragePermission()
             }
         } else {
             openGalleryForImage()
         }
     }
 
-    private fun requestContactsPermission() {
+    private fun requestExternalStoragePermission() {
         ActivityCompat.requestPermissions(
             activity as AppCompatActivity,
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
@@ -256,23 +317,47 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     ) {
         when (requestCode) {
             REQUEST_CODE -> {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     openGalleryForImage()
                 } else {
-                    // permission denied! Disable the
-                    // functionality that depends on this permission.
+
                 }
                 return
             }
         }
     }
 
-
+    private fun scaleBitmap(bitmap: Bitmap, wantedWidth: Int, wantedHeight: Int): Bitmap? {
+        val output = Bitmap.createBitmap(wantedWidth, wantedHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        val m = Matrix()
+        m.setScale(wantedWidth.toFloat() / bitmap.width, wantedHeight.toFloat() / bitmap.height)
+        canvas.drawBitmap(bitmap, m, Paint())
+        return output
+    }
 }
 
+/*
 
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    if (resultCode != Activity.RESULT_OK) {
+        return
+    }
 
+    if (requestCode == AddNewPlaceDialogFragment.REQUEST_CODE) {
 
+        //    val imageBitmap = data?.extras?.get("data") as? Bitmap
+        val imageUri = data?.extras?.get("image/*") as? Uri
+        binding.placeGalleryButton.setImageURI(imageUri)
+        binding.placeGalleryButton.visibility = View.VISIBLE
+
+        Toast.makeText(context, imageUri.toString(), Toast.LENGTH_SHORT).show()
+        //   binding.placeCameraButton.setImageBitmap(imageBitmap)
+        // binding.placeCameraButton.visibility = View.VISIBLE
+
+    }
+}
+*/
+
+*/

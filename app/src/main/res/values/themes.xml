@@ -1,2 +1,3 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    android:theme="@style/Theme.AppCompat.NoActionBar"
 </resources>

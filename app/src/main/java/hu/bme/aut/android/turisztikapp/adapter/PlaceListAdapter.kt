@@ -19,7 +19,6 @@ import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.RowPlacesBinding
-
 import hu.bme.aut.android.turisztikapp.fragment.PlaceListFragmentDirections
 
 
@@ -89,6 +88,7 @@ class PlaceListAdapter() :
             // holder.itemView.setBackgroundColor(Color.parseColor("#b3f5d4"));
             holder.itemView.setBackgroundColor(R.drawable.square_background_text);
 
+
         } else {
             holder.itemView.setBackgroundColor(Color.parseColor("#cdfaf4"));
             //  holder.imageView.setBackgroundColor(Color.parseColor("#FFFAF8FD"));
@@ -107,6 +107,7 @@ class PlaceListAdapter() :
     fun addPlace(place: Place?) {
         place ?: return
         placeList += (place)
+        placeList.sortBy { it.name }
         submitList(placeList)
 
     }
@@ -114,6 +115,7 @@ class PlaceListAdapter() :
     fun removePlace(place: Place?) {
         place ?: return
         placeList -= (place)
+        placeList.sortBy { it.name }
         submitList(placeList)
     }
 
