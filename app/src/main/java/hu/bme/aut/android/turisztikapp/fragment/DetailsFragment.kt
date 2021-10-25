@@ -6,11 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.LinearLayout
-import android.widget.RatingBar
-import android.widget.RatingBar.OnRatingBarChangeListener
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
@@ -30,6 +26,7 @@ import hu.bme.aut.android.turisztikapp.adapter.CommentAdapter
 import hu.bme.aut.android.turisztikapp.data.Comment
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentDetailsBinding
+
 import hu.bme.aut.android.turisztikapp.extension.hideKeyboard
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.util.*
@@ -44,14 +41,14 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
     private lateinit var navHostFragment: NavHostFragment
 
     companion object {
-        val LETTER = "letter"
+        const val PLACE = "place"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {                //megkapja az adatokat
-            place = it.get(LETTER) as Place?
+            place = it.get(PLACE) as Place?
         }
     }
 
@@ -73,12 +70,11 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         commentAdapter = CommentAdapter(place!!.id)
         binding.placeComment.adapter = commentAdapter
         binding.commentSendImage.setOnClickListener {
-            println("gomb----------")
             sendClick()
         }
-        binding.rateDetailsText.setOnClickListener {
-            showDialog()
-        }
+        /* binding.rateDetailsText.setOnClickListener {
+             showDialog()
+         }*/
 
 
         setToolbar()
@@ -99,6 +95,11 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
         binding.descDetailsText.text = place?.description
         binding.rateDetailsText.text = place?.rate.toString()
+        place?.rate.also {
+            if (it != null) {
+                binding.ratingBarDetails.rating = it
+            }
+        }
 
 
     }
@@ -138,8 +139,11 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
     private fun uploadComment() {
         val newComment = Comment(
             id = UUID.randomUUID().toString(),
+            userId = uid,
+            userName = userName,
             placeId = place?.id.toString(),
-            comment = binding.commentDetailsEditText.text.toString().capitalize()
+            comment = binding.commentDetailsEditText.text.toString()
+                .replaceFirstChar { it.uppercase() }
 
         )
 
@@ -165,38 +169,38 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         binding.navView.setNavigationItemSelectedListener(this)
     }
 
-    private fun showDialog() {
-        val popDialog = AlertDialog.Builder(requireContext())
-        val linearLayout = LinearLayout(context)
-        val rating = RatingBar(context)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        rating.layoutParams = lp
-        rating.numStars = 5
-        rating.stepSize = 1f
+    /*  private fun showDialog() {  //ratinbar alertdialog
+          val popDialog = AlertDialog.Builder(requireContext())
+          val linearLayout = LinearLayout(context)
+          val rating = RatingBar(context)
+          val lp = LinearLayout.LayoutParams(
+              LinearLayout.LayoutParams.WRAP_CONTENT,
+              LinearLayout.LayoutParams.WRAP_CONTENT
+          )
+          rating.layoutParams = lp
+          rating.numStars = 5
+          rating.stepSize = 1f
 
-        //add ratingBar to linearLayout
-        linearLayout.addView(rating)
-        popDialog.setIcon(android.R.drawable.btn_star_big_on)
-        popDialog.setTitle("Értékelés: ")
+          //add ratingBar to linearLayout
+          linearLayout.addView(rating)
+          popDialog.setIcon(android.R.drawable.btn_star_big_on)
+          popDialog.setTitle("Értékelés: ")
 
-        //add linearLayout to dailog
-        popDialog.setView(linearLayout)
-        rating.onRatingBarChangeListener =
-            OnRatingBarChangeListener { ratingBar, v, b -> rateSum += v }
+          //add linearLayout to dailog
+          popDialog.setView(linearLayout)
+          rating.onRatingBarChangeListener =
+              OnRatingBarChangeListener { ratingBar, v, b -> rateSum += v }
 
-        // Button OK
-        popDialog.setPositiveButton(android.R.string.ok) { dialoginterface, i ->
-            binding.rateDetailsText.text = rateSum.toString()
-            binding.rateDetailsText.text = rating.progress.toString()
+          // Button OK
+          popDialog.setPositiveButton(android.R.string.ok) { dialoginterface, i ->
+              binding.rateDetailsText.text = rateSum.toString()
+              binding.rateDetailsText.text = rating.progress.toString()
 
-        }
-            .setNegativeButton("Cancel", null)
-        popDialog.create()
-        popDialog.show()
-    }
+          }
+              .setNegativeButton("Cancel", null)
+          popDialog.create()
+          popDialog.show()
+      }*/
 
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -205,12 +209,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 FirebaseAuth.getInstance().signOut()
                 findNavController().navigate(
                     R.id.action_details_to_logout,
-                    null
-                )
-            }
-            R.id.menu_add_proba -> {
-                findNavController().navigate(
-                    R.id.action_details_to_add_new_place,
                     null
                 )
             }

@@ -59,6 +59,7 @@
             android:id="@+id/placeCategorySpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:entries="@array/category_items" />
 
         <RatingBar
@@ -80,14 +81,14 @@
                 android:id="@+id/placeCameraButton"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:padding="16dp"
+                android:layout_margin="8dp"
                 android:src="@drawable/ic_camera" />
 
             <ImageButton
                 android:id="@+id/placeGalleryButton"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:padding="16dp"
+                android:layout_margin="8dp"
                 android:src="@drawable/ic_gallery" />
 
         </LinearLayout>

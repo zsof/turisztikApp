@@ -1,6 +1,7 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.DialogInterface
@@ -8,20 +9,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.location.Geocoder
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
-import android.view.View
 import android.view.WindowManager
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -40,11 +43,24 @@ import java.util.*
 class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
 
     companion object {
-        private const val REQUEST_CODE = 101
+        private const val REQUEST_CODE_CAMERA = 101
+        private const val REQUEST_CODE_GALLERY = 10
+        const val LATLNG = "latLng"
     }
 
     private lateinit var binding: DialogAddNewPlaceBinding
-    // private lateinit var categorySpinner: Spinner
+    private var setGallery: Boolean = false
+    private var setCamera: Boolean = false
+    private var latLng: LatLng? = LatLng(47.497913, 19.040236)
+    private val placeHolder = R.drawable.ic_camera
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {                //megkapja az adatokat
+            latLng = it.get(LATLNG) as LatLng?
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreate(savedInstanceState)
@@ -55,7 +71,9 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         binding.placeGalleryButton.setOnClickListener {
             handleReadContactsPermission()
         }
-
+        if (latLng != null) {
+            binding.placeAddressEditText.setText(getAddress(latLng!!))
+        }
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.new_place))
             .setView(binding.root)
@@ -76,9 +94,14 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             return
         }
 
-        if (binding.placeCameraButton.visibility != View.VISIBLE) {
+        if (!setCamera && !setGallery
+        ) {
             uploadPlace()
-        } else if (binding.placeCameraButton.visibility == View.VISIBLE) {
+            findNavController().navigate(
+                R.id.ok_dialog_to_list,
+                null
+            )
+        } else if (setCamera && !setGallery) {
             try {
                 uploadPlaceWithImage()
                 findNavController().navigate(
@@ -88,19 +111,20 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        } else if (setGallery &&
+            !setCamera
+        ) {
+            try {
+                uploadPlaceWithImageFromGallery()
+                findNavController().navigate(
+                    R.id.ok_dialog_to_list,
+                    null
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
-        if (binding.placeGalleryButton.visibility != View.VISIBLE) {
-            uploadPlace()
-        } else if (binding.placeGalleryButton.visibility == View.VISIBLE) try {
-            uploadPlaceWithImageFromGallery()
-            findNavController().navigate(
-                R.id.ok_dialog_to_list,
-                null
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
 
@@ -108,13 +132,16 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
 
 
-    private fun uploadPlace(image: String? = null) {  //adatbázist összeköti a layout-tal
+    private fun uploadPlace(image: String? = placeHolder.toString()) {  //adatbázist összeköti a layout-tal
         val newPlace = Place(
             id = UUID.randomUUID().toString(),
             name = binding.placeNameEditText.text.toString()
                 .replaceFirstChar { it.uppercase() },
-            address = binding.placeAddressEditText.text.toString().capitalize(),
-            description = binding.placeDescEditText.text.toString().capitalize(),
+            address = binding.placeAddressEditText.text.toString()
+                .replaceFirstChar { it.uppercase() },
+            geoPoint = GeoPoint(latLng!!.latitude, latLng!!.longitude),
+            description = binding.placeDescEditText.text.toString()
+                .replaceFirstChar { it.uppercase() },
             rate = binding.placeRatingBar.rating,
             image = image,
             category = Category.getByOrdinal(binding.placeCategorySpinner.selectedItemPosition)
@@ -142,29 +169,52 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             }
     }
 
+    private fun getAddress(latLng: LatLng): String {
+        val geocoder = Geocoder(context)
+        val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+
+        return addresses[0].getAddressLine(0)
+
+    }
 
     private fun makePhotoClick() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(takePictureIntent, REQUEST_CODE)
+        startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
     }
 
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_CODE)
+        startActivityForResult(intent, REQUEST_CODE_GALLERY)
     }
 
     override fun onActivityResult(reqCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(reqCode, resultCode, data)
+
         if (resultCode != RESULT_OK) {
             return
         }
-        if (reqCode == REQUEST_CODE) {
+        if (reqCode == REQUEST_CODE_CAMERA) {
             try {
-                val imageBitmap = data?.extras?.get("data") as? Bitmap
-                binding.placeCameraButton.setImageBitmap(imageBitmap)
-                binding.placeCameraButton.visibility = View.VISIBLE
+                val imageBitmap = data?.extras?.get("data") as Bitmap
+                binding.placeCameraButton.setImageBitmap(
+                    Bitmap.createScaledBitmap(
+                        imageBitmap,
+                        binding.placeCameraButton.width,
+                        binding.placeCameraButton.height,
+                        false
+                    )
+                )
+                setCamera = true
+                setGallery = false
+                binding.placeGalleryButton.setImageResource(R.drawable.ic_gallery)
 
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show()
+            }
+        } else if (reqCode == REQUEST_CODE_GALLERY) {
+            try {
                 val imageUri = data?.data
                 val imageStream: InputStream? = imageUri?.let {
                     activity?.applicationContext?.contentResolver?.openInputStream(
@@ -172,28 +222,22 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                     )
                 }
                 val selectedImage = BitmapFactory.decodeStream(imageStream)
-                binding.placeGalleryButton.setImageBitmap(selectedImage)
-                binding.placeGalleryButton.visibility = View.VISIBLE
+                binding.placeGalleryButton.setImageBitmap(
+                    Bitmap.createScaledBitmap(
+                        selectedImage,
+                        binding.placeGalleryButton.width,
+                        binding.placeGalleryButton.height,
+                        false
+                    )
+                )
+                setGallery = true
+                setCamera = false
+                binding.placeCameraButton.setImageResource(R.drawable.ic_camera)
 
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
                 Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show()
             }
-            /* try {   //scaleBitmappel nem fut le a kamerából!! való feltöltés
-                 val imageUri = data?.data
-                 val imageStream: InputStream? = imageUri?.let {
-                     activity?.applicationContext?.contentResolver?.openInputStream(
-                         it
-                     )
-                 }
-                 val selectedImage = BitmapFactory.decodeStream(imageStream)
-                 binding.placeGalleryButton.setImageBitmap(scaleBitmap(selectedImage,150, 140))
-                 binding.placeGalleryButton.visibility = View.VISIBLE
-             }
-             catch (e: FileNotFoundException) {
-                 e.printStackTrace()
-                 Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show()
-             }*/
         } else {
             Toast.makeText(context, "You haven't picked Image", Toast.LENGTH_LONG).show()
         }
@@ -238,7 +282,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
 
         newImageRef.putBytes(imageInBytes)
             .addOnFailureListener { exception ->
-                Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
             }
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -261,14 +304,16 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private fun showRationaleDialog(
-        /*   @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Attention!",
-           @StringRes explanation: Int,*/
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Figyelem!",
+        @StringRes explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::dismiss
     ) {
         val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
             .setCancelable(false)
-            .setPositiveButton("Proceed") { dialog, id ->
+            .setMessage(explanation)
+            .setPositiveButton("OK") { dialog, id ->
                 dialog.cancel()
                 onPositiveButton()
             }
@@ -284,13 +329,13 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
+            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
                     activity as AppCompatActivity,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 )
             ) {
                 showRationaleDialog(
-                    //  explanation = R.string.contacts_permission_explanation,
+                    explanation = R.string.contacts_permission_explanation,
                     onPositiveButton = this::requestExternalStoragePermission
                 )
 
@@ -302,11 +347,11 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         }
     }
 
-    private fun requestExternalStoragePermission() {
+    private fun requestExternalStoragePermission() {  //jogosultság elkérése
         ActivityCompat.requestPermissions(
             activity as AppCompatActivity,
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            REQUEST_CODE
+            REQUEST_CODE_GALLERY
         )
     }
 
@@ -316,7 +361,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         grantResults: IntArray
     ) {
         when (requestCode) {
-            REQUEST_CODE -> {
+            REQUEST_CODE_GALLERY -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openGalleryForImage()
                 } else {
@@ -327,37 +372,4 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         }
     }
 
-    private fun scaleBitmap(bitmap: Bitmap, wantedWidth: Int, wantedHeight: Int): Bitmap? {
-        val output = Bitmap.createBitmap(wantedWidth, wantedHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        val m = Matrix()
-        m.setScale(wantedWidth.toFloat() / bitmap.width, wantedHeight.toFloat() / bitmap.height)
-        canvas.drawBitmap(bitmap, m, Paint())
-        return output
-    }
 }
-
-/*
-
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (resultCode != Activity.RESULT_OK) {
-        return
-    }
-
-    if (requestCode == AddNewPlaceDialogFragment.REQUEST_CODE) {
-
-        //    val imageBitmap = data?.extras?.get("data") as? Bitmap
-        val imageUri = data?.extras?.get("image/*") as? Uri
-        binding.placeGalleryButton.setImageURI(imageUri)
-        binding.placeGalleryButton.visibility = View.VISIBLE
-
-        Toast.makeText(context, imageUri.toString(), Toast.LENGTH_SHORT).show()
-        //   binding.placeCameraButton.setImageBitmap(imageBitmap)
-        // binding.placeCameraButton.visibility = View.VISIBLE
-
-    }
-}
-*/
-
-*/

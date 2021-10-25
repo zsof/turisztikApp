@@ -1,30 +1,41 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
-import android.location.Address
-import android.location.Geocoder
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
+import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
-import java.util.*
 
+class MapFragment : BaseFragment(),
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
-class MapFragment : BaseFragment(), GoogleMap.OnMarkerClickListener {
-
-    val options = GoogleMapOptions()
 
     private lateinit var binding: FragmentMapBinding
-    private var myMarker: Marker? = null
+    private lateinit var map: GoogleMap
+    private lateinit var locationPermRequest: ActivityResultLauncher<String>
+
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -35,53 +46,40 @@ class MapFragment : BaseFragment(), GoogleMap.OnMarkerClickListener {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        map = googleMap
+        getPlaces()
         val budapest = LatLng(47.497913, 19.040236)
-        googleMap.addMarker(MarkerOptions().position(budapest).title("Budapest"))
         // .icon(BitmapDescriptorFactory.fromResource(R.drawable.dollar ))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(budapest))
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(11F))
 
-        googleMap.uiSettings.isZoomControlsEnabled = true
+        googleMap.uiSettings.setAllGesturesEnabled(true)
         googleMap.uiSettings.isCompassEnabled = true
-        googleMap.uiSettings.isMyLocationButtonEnabled = true
+        googleMap.uiSettings.isZoomControlsEnabled = true
+
         googleMap.setOnMapLongClickListener {
-            myMarker = googleMap.addMarker(
-                MarkerOptions().position(it).title("Actual position" + it.latitude + it.longitude)
-            )
-            findNavController().navigate(
-                R.id.action_map_to_add_new_place,
-                null,
-                navOptions {
-                    anim {
-                        enter = android.R.animator.fade_in
-                        exit = android.R.animator.fade_out
-                    }
-                }
-            )
+            val action =
+                MapFragmentDirections.actionMapToAddNewPlace(latLng = it)
+            findNavController().navigate(action)
 
         }
-        googleMap.setOnMarkerClickListener(this)
 
+        googleMap.setOnInfoWindowClickListener {
+            val action = MapFragmentDirections.actionMapToDetails(place = it.tag as Place)
+            findNavController().navigate(action)
+        }
+    }
 
-        println(userEmail + "---------------------")
-
-        /* val geocoder: Geocoder
-         val addresses: List<Address>
-         geocoder = Geocoder(context, Locale.getDefault())
-
-         addresses = geocoder.getFromLocation(
-             latitude,
-             longitude,
-             1
-         )
-         val address: String =
-             addresses[0].getAddressLine(0)
-
-         val city: String = addresses[0].getLocality()
-         val state: String = addresses[0].getAdminArea()
-         val country: String = addresses[0].getCountryName()
-         val postalCode: String = addresses[0].getPostalCode()
-         val knownName: String = addresses[0].getFeatureName()*/
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        locationPermRequest =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                if (it) {
+                    toast(getString(R.string.permission_granted))
+                    enableMyLocation()
+                } else toast(getString(R.string.permission_denied))
+            }
+        handleFineLocationPermission()
     }
 
     override fun onCreateView(
@@ -90,7 +88,6 @@ class MapFragment : BaseFragment(), GoogleMap.OnMarkerClickListener {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_map, container, false)
-
     }
 
 
@@ -109,37 +106,94 @@ class MapFragment : BaseFragment(), GoogleMap.OnMarkerClickListener {
                         R.id.action_map_to_logout,
                         null
                     )
-                    true
                 }
                 R.id.menu_map_places -> {
                     findNavController().navigate(
                         R.id.action_map_to_place_list,
                         null
                     )
-                    true
-                }
-                R.id.menu_map_add -> {
-                    findNavController().navigate(
-                        R.id.action_map_to_add_new_place,
-                        null
-                    )
-                    true
                 }
 
-                else -> true
+            }
+            true
+        }
+    }
+
+
+    private fun getPlaces() {
+        if (!::map.isInitialized) return
+        var museum = null
+        Firebase.firestore.collection("places").get().addOnSuccessListener {
+            for (dc in it.documents) {
+                val place = dc.toObject<Place>()
+                place ?: continue
+                val marker = map.addMarker(
+                    MarkerOptions().position(
+                        LatLng(
+                            place.geoPoint.latitude,
+                            place.geoPoint.longitude
+                        )
+                    ).title(place.name)
+                )
+                marker?.tag = place
             }
         }
     }
 
-    override fun onMarkerClick(marker: Marker?): Boolean {
-        if (marker != null) {
-            if (marker.equals(myMarker))
-                findNavController().navigate(
-                    R.id.action_map_to_details,
-                    null
-                )
-            println("list fragment elv--------")
-        }
-        return true
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (!::map.isInitialized) return
+        map.isMyLocationEnabled = true
+        map.uiSettings.isMyLocationButtonEnabled = true
     }
+
+
+    @SuppressLint("MissingPermission")
+    private fun handleFineLocationPermission() {
+        if (ContextCompat.checkSelfPermission(      //ha nincs engedély rá
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
+                    activity as AppCompatActivity,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+                showRationaleDialog(
+                    explanation = R.string.explanation_permission_location,  //magyarázat
+                    onPositiveButton = this::requestFineLocationPermission  //ok-ra elkéri a jogosultságot
+                )
+            } else {
+                requestFineLocationPermission()  //elkéri a jogosultságot
+            }
+        } else {
+            enableMyLocation()  //megvan a hely
+        }
+    }
+
+    private fun showRationaleDialog(
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
+        @StringRes explanation: Int,
+        onPositiveButton: () -> Unit,
+        onNegativeButton: () -> Unit = this::onDestroy
+    ) {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setCancelable(false)
+            .setMessage(explanation)
+            .setPositiveButton(getString(R.string.ok_permisson_dialog)) { dialog, id ->
+                dialog.cancel()
+                onPositiveButton()
+            }
+            .setNegativeButton(getString(R.string.exit_permission_diaog)) { dialog, id -> onNegativeButton() }
+            .create()
+        alertDialog.show()
+    }
+
+    private fun requestFineLocationPermission() {  //jogosultság elkérése
+        locationPermRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
 }

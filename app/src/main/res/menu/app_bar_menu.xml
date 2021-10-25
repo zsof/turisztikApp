@@ -8,10 +8,7 @@
         android:id="@+id/menu_map"
         android:icon="@drawable/map"
         android:title="@string/t_rk_p" />
-    <item
-        android:id="@+id/menu_add_proba"
-        android:icon="@drawable/ic_logout"
-        android:title="Hozzáad" />
+
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_settings"

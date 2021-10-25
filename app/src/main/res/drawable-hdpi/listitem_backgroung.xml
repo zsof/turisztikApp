@@ -10,16 +10,15 @@
 
         />
 
-    <stroke
+    <!--<stroke
         android:color="@color/black"
 
-        android:width="6dp" />
+        android:width="6dp" />-->
     <solid android:color="#13f2dc" />
     <gradient
         android:angle="270"
         android:centerColor="#42f5ef"
-        android:endColor="#13f2dc"
-        android:startColor="#90150517" />
-
+        android:endColor="#4DDAED"
+        android:startColor="#4DDAED" />
 
 </shape>

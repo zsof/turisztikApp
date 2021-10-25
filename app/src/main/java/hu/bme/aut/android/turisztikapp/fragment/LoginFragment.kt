@@ -1,16 +1,15 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
-import android.app.Activity
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.WindowManager
+import android.widget.Checkable
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +24,7 @@ class LoginFragment : BaseFragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var binding: FragmentLoginBinding
+    private var logged: Boolean = false
 
 
     override fun onCreateView(
@@ -32,22 +32,46 @@ class LoginFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-         return inflater.inflate(R.layout.fragment_login, container, false)
+        return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
-        binding= FragmentLoginBinding.bind(view)
+        binding = FragmentLoginBinding.bind(view)
         binding.btnRegister.setOnClickListener { registerClick() }
         binding.btnLogin.setOnClickListener { loginClick() }
+
+        // save(binding.checkLog.isChecked, "LoggedIn")
+
+        if (userEmail != null) {
+            findNavController().navigate(
+                R.id.action_login_to_map,
+                null
+            )
+
+        } else return
 
 
     }
 
+    private fun save(isChecked: Boolean, key: String) {
+        val sharedPreferences: SharedPreferences =
+            (activity as AppCompatActivity).getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(key, isChecked)
+        editor.apply()
+    }
+
+    private fun load(key: String): Boolean {
+        val sharedPreferences: SharedPreferences =
+            (activity as AppCompatActivity).getPreferences(Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean(key, false)
+    }
 
 
-    private fun validateForm() = binding.etEmail.validateNonEmpty() && binding.etPassword.validateNonEmpty()
+    private fun validateForm() =
+        binding.etEmail.validateNonEmpty() && binding.etPassword.validateNonEmpty()
 
     private fun registerClick() {
         if (!validateForm()) {
@@ -69,12 +93,17 @@ class LoginFragment : BaseFragment() {
                 firebaseUser?.updateProfile(profileChangeRequest)
 
                 toast("Registration is successful")
+                findNavController().navigate(
+                    R.id.action_login_to_map,
+                    null
+                )
             }
             .addOnFailureListener { exception ->
                 hideProgressDialog()
 
                 toast( "Registration is not successful")
             }
+
     }
 
     private fun loginClick() {

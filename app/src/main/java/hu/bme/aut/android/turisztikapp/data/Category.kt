@@ -1,7 +1,7 @@
 package hu.bme.aut.android.turisztikapp.data
 
 enum class Category {
-    MÚZEUM, Könyvtár;
+    Museum, Library, ArtGallery, Church, Castle, Zoo;
 
     companion object {
 

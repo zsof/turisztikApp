@@ -24,13 +24,22 @@
     <string name="ok">Ok</string>
     <string name="cancel">Törlés</string>
     <string name="l_tnival_k">Látnivalók</string>
-    <string name="contacts_permission_explanation">The application needs to access your contacts to display them.</string>
+    <string name="contacts_permission_explanation">Az alkalmazásnak szüksége van a tárhely használatára.</string>
+    <string name="logedin">Bejelentkezve marad?</string>
+    <string name="attention">Figyelem!</string>
+    <string name="ok_permisson_dialog">OK</string>
+    <string name="exit_permission_diaog">Exit</string>
+    <string name="explanation_permission_location">Az eszköznek szüksége van az Ön helyadatainak megjelenítéséhez</string>
+    <string name="permission_denied">Endegély megtagadva</string>
+    <string name="permission_granted">Engedély megadva</string>
 
     <string-array name="category_items">
         <item>Múzeum</item>
         <item>Könyvtár</item>
+        <item>Fotó galéria</item>
         <item>Templom</item>
+        <item>Állatkert</item>
         <item>Vár</item>
-        <item>Épület</item>
+
     </string-array>
 </resources>

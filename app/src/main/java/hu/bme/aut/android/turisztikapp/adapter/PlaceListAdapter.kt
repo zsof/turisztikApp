@@ -1,14 +1,10 @@
 package hu.bme.aut.android.turisztikapp.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.Color
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.DrawableRes
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -22,12 +18,15 @@ import hu.bme.aut.android.turisztikapp.databinding.RowPlacesBinding
 import hu.bme.aut.android.turisztikapp.fragment.PlaceListFragmentDirections
 
 
-class PlaceListAdapter() :
-    ListAdapter<Place, PlaceListAdapter.PlaceViewHolder>(itemCallback) {
+class PlaceListAdapter :
+    ListAdapter<Place, PlaceListAdapter.PlaceViewHolder>(itemCallback), Filterable {
 
     private val placeList: MutableList<Place> = mutableListOf()
-    private var lastPosition = -1
-    //  private val listener: OnItemCLickListener? = null
+    private var filterList: MutableList<Place> = placeList
+
+    init {
+        this.placeList.reverse()
+    }
 
     inner class PlaceViewHolder(binding: RowPlacesBinding) : RecyclerView.ViewHolder(binding.root) {
         val textPlaceName: TextView = binding.rowPlaceName
@@ -52,6 +51,7 @@ class PlaceListAdapter() :
 
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         val place = getItem(position)
+
         holder.placeItem = place
         holder.textPlaceName.text = place.name
         holder.ratePlace.text = place.rate.toString()
@@ -60,21 +60,10 @@ class PlaceListAdapter() :
 
         holder.itemView.setOnClickListener {
             val action =
-                PlaceListFragmentDirections.actionPlacelistToDetails(letter = place)
+                PlaceListFragmentDirections.actionPlacelistToDetails(place = place)
             println(place.id)
             holder.itemView.findNavController().navigate(action)
         }
-        /* holder.mMapView.getMapAsync(new OnMapReadyCallback()
-         {
-
-             override fun onMapReady(GoogleMap googleMap) {
-                 holder.mMapView = googleMap;
-
-                 if (holder.mMapView != null) {
-                     holder.mMapView.addMarker(...);
-                 }
-             }
-         }*/
 
         if (place.image.isNullOrBlank()) {
             holder.imagePlace.visibility = View.GONE
@@ -84,22 +73,16 @@ class PlaceListAdapter() :
                 .into(holder.imagePlace)
             holder.imagePlace.visibility = View.VISIBLE
         }
-        if (position % 2 == 1) {
-            // holder.itemView.setBackgroundColor(Color.parseColor("#b3f5d4"));
-            holder.itemView.setBackgroundColor(R.drawable.square_background_text);
-
-
-        } else {
-            holder.itemView.setBackgroundColor(Color.parseColor("#cdfaf4"));
-            //  holder.imageView.setBackgroundColor(Color.parseColor("#FFFAF8FD"));
-        }
-        //  setAnimation(holder.itemView, position)
     }
 
     @DrawableRes
     private fun getImageResource(category: Category?) = when (category) {
-        Category.MÚZEUM -> R.drawable.ic_camera
-        Category.Könyvtár -> R.drawable.ic_bank
+        Category.Museum -> R.drawable.ic_museum
+        Category.Library -> R.drawable.ic_library
+        Category.ArtGallery -> R.drawable.ic_art_gallery
+        Category.Church -> R.drawable.ic_church
+        Category.Zoo -> R.drawable.ic_zoo
+        Category.Castle -> R.drawable.ic_castle
 
         else -> null
     }
@@ -109,7 +92,6 @@ class PlaceListAdapter() :
         placeList += (place)
         placeList.sortBy { it.name }
         submitList(placeList)
-
     }
 
     fun removePlace(place: Place?) {
@@ -119,14 +101,59 @@ class PlaceListAdapter() :
         submitList(placeList)
     }
 
-    /*private fun setAnimation(viewToAnimate: View, position: Int) {
-        if (position > lastPosition) {
-            val animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
-            viewToAnimate.startAnimation(animation)
-            lastPosition = position
-        }
-    }*/
+    override fun getItemCount(): Int {
+        return placeList.size
+    }
 
+    override fun getFilter(): Filter {
+        println("GEEEEETfiltereer-------------------")
+
+        val flowerFilter = object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                println("filtereer-------------------")
+                val searchString = charSequence.toString()
+                //val tempList: MutableList<Place> = ArrayList()
+
+                if (searchString.isEmpty()) {
+                    filterList = placeList
+                    //  tempList.addAll(filterList)
+
+                } else {
+                    val tempList: MutableList<Place> = mutableListOf()
+
+                    for (place: Place in placeList) {
+                        /*if (place.name.replaceFirstChar { it.lowercase() }
+                                .contains(searchString.replaceFirstChar { it.lowercase() })) {
+                            tempList.add(place)
+                        }*/
+                        if (place.name.contains(searchString)) tempList.add(place)
+                    }
+                    filterList = tempList
+                }
+
+                val filterResults = FilterResults()
+                filterResults.values = filterList
+
+                return filterResults
+
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun publishResults(
+                charSequence: CharSequence?,
+                filterResults: FilterResults?
+            ) {
+                // placeList.clear()
+                //placeList.addAll(filterResults?.values as MutableList<Place>)
+                filterList = filterResults?.values as MutableList<Place>
+                println("filter: ${filterList.size}")
+                notifyDataSetChanged()
+                submitList(filterList)
+            }
+        }
+
+        return flowerFilter
+    }
 
     companion object {
         object itemCallback : DiffUtil.ItemCallback<Place>() {
@@ -140,6 +167,5 @@ class PlaceListAdapter() :
             }
         }
     }
-
 
 }

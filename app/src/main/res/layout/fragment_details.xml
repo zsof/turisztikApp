@@ -21,6 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_navigate_menu"
+
             app:title="@string/title"
             tools:targetApi="lollipop" />
 
@@ -28,103 +29,136 @@
             android:id="@+id/detailsImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/kep"
+            app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toTopOf="@id/nameDetailsText" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <TextView
-        android:id="@+id/nameDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailsImage"
-        tools:text="Nemzeti Múzeum" />
-
-    <TextView
-        android:id="@+id/addressDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nameDetailsText"
-        tools:text="1146 Kodály utca 4" />
-
-    <TextView
-        android:id="@+id/descDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addressDetailsText"
-        tools:text="Nagyon szép múzeum" />
-
-    <TextView
-        android:id="@+id/rateDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/descDetailsText"
-        tools:text="4.0" />
-
-    <TextView
-        android:id="@+id/commentDetailsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="Hozzászólások:"
-        android:textSize="20sp"
-        android:textStyle="bold"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rateDetailsText" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/placeComment"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="vertical"
-        android:scrollbars="vertical"
-        android:maxHeight="200dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/commentDetailsText"
-        app:layout_constraintBottom_toTopOf="@id/commentDetailsEditText"
-        tools:listitem="@layout/row_comment" />
+        <TextView
+            android:id="@+id/nameDetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detailsImage"
+            tools:text="Nemzeti Múzeum" />
 
 
-    <EditText
-        android:id="@+id/commentDetailsEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Hozzászólás"
-        android:inputType="textCapSentences"
-        app:layout_constraintTop_toBottomOf="@id/placeComment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/commentSendImage"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <ImageView
+            android:id="@+id/placeDetailsImageIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_map"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameDetailsText" />
 
-    <ImageButton
-        android:id="@+id/commentSendImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
-        app:layout_constraintTop_toBottomOf="@id/placeComment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_send" />
+        <TextView
+            android:id="@+id/addressDetailsText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:paddingRight="8dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/placeDetailsImageIcon"
+            app:layout_constraintTop_toBottomOf="@id/nameDetailsText"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="1146 Kodály utca 4" />
+
+        <TextView
+            android:id="@+id/descDetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addressDetailsText"
+            tools:text="Nagyon szép múzeum" />
+
+        <TextView
+            android:id="@+id/rateDetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:paddingTop="8dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/descDetailsText"
+            tools:text="4.0" />
+
+        <RatingBar
+            android:id="@+id/ratingBarDetails"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:clickable="false"
+            app:layout_constraintStart_toEndOf="@id/rateDetailsText"
+            app:layout_constraintTop_toBottomOf="@id/descDetailsText" />
+
+        <TextView
+            android:id="@+id/commentDetailsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Hozzászólások:"
+            android:textSize="20sp"
+            android:textStyle="bold"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rateDetailsText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/placeComment"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="16dp"
+            android:maxHeight="200dp"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/commentDetailsEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/commentDetailsText"
+            tools:listitem="@layout/row_comment" />
+
+
+        <EditText
+            android:id="@+id/commentDetailsEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="Hozzászólás"
+            android:inputType="textCapSentences"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/commentSendImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/placeComment" />
+
+        <ImageButton
+            android:id="@+id/commentSendImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_send"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
+            app:layout_constraintTop_toBottomOf="@id/placeComment" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -132,7 +166,7 @@
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         app:menu="@menu/app_bar_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

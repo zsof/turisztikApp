@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     val currentFragment: Fragment? //visszagomb
         get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host_fragment)
 }

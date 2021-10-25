@@ -1,27 +1,15 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
-import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.navArgs
-import androidx.navigation.navOptions
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -30,7 +18,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.adapter.PlaceListAdapter
-import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 
@@ -38,10 +25,13 @@ import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 class PlaceListFragment : BaseFragment(),
     OnNavigationItemSelectedListener {
 
+
     private lateinit var binding: FragmentPlaceListBinding
     private lateinit var placeListAdapter: PlaceListAdapter
     private lateinit var navController: NavController
+    private lateinit var searchView: SearchView
     private lateinit var navHostFragment: NavHostFragment
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,10 +66,53 @@ class PlaceListFragment : BaseFragment(),
         }
         binding.navView.setNavigationItemSelectedListener(this)
 
+
+        binding.toolbar.inflateMenu(R.menu.search_menu)
+        binding.toolbar.collapseActionView()
+
+
         initPostsListener()
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search)
+        val searchView = searchItem.actionView as SearchView
+        searchView.queryHint = "Keresés"
+        searchItem.expandActionView() //egész kattintható
+        searchView.isIconified = false
+        //  searchItem.collapseActionView()
+        //MenuItemCompat.collapseActionView(searchItem)
+
+
+        searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String): Boolean {
+                    placeListAdapter.filter.filter(newText)
+                    return true
+                }
+
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    // **Here you can get the value "query" which is entered in the search box.**
+
+                    return true
+                }
+            })
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    /* override fun onBackPressed(): Boolean {
+        if (!searchView.isIconified) {
+            searchView.isIconified = true
+        } else {
+             super.onBackPressed()
+        }
+        return true
+    }*/
 
     private fun initPostsListener() {
         val db = Firebase.firestore
@@ -91,6 +124,7 @@ class PlaceListFragment : BaseFragment(),
                 }
 
                 for (dc in snapshots!!.documentChanges) {
+
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> placeListAdapter.addPlace(dc.document.toObject<Place>())
                         DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
@@ -100,18 +134,13 @@ class PlaceListFragment : BaseFragment(),
             }
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_logout -> {
                 FirebaseAuth.getInstance().signOut()
                 findNavController().navigate(
                     R.id.action_placelis_to_logout,
-                    null
-                )
-            }
-            R.id.menu_add_proba -> {
-                findNavController().navigate(
-                    R.id.action_placelist_to_add_new_place,
                     null
                 )
             }

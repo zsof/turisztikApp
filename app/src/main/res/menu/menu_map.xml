@@ -4,10 +4,7 @@
         android:id="@+id/menu_map_places"
         android:icon="@drawable/ic_budapest"
         android:title="@string/l_tnival_k" />
-    <item
-        android:id="@+id/menu_map_add"
-        android:icon="@drawable/ic_logout"
-        android:title="Hozzáad" />
+
     <item
         android:id="@+id/menu_map_logout"
         android:icon="@drawable/ic_logout"
