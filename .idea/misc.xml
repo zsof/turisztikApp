@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_add_image.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_castle.xml" value="0.1" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_send.xml" value="0.108" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-hdpi/listitem_backgroung.xml" value="0.1" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-hdpi/square_background_text.xml" value="0.1" />
@@ -16,12 +18,14 @@
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/dialog_add_new_place.xml" value="0.4544287548138639" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_base.xml" value="0.16875" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_details.xml" value="0.16666666666666666" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_details_image.xml" value="0.37302423603793466" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_login.xml" value="0.22" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_map.xml" value="0.16666666666666666" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_place_list.xml" value="0.16666666666666666" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/menu_layout.xml" value="0.17346014492753623" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/nav_header_main.xml" value="0.12" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_comment.xml" value="0.3333333333333333" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_image.xml" value="0.37302423603793466" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_places.xml" value="0.3333333333333333" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/app_bar_menu.xml" value="0.16875" />
         <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/menu_map.xml" value="0.11574074074074074" />

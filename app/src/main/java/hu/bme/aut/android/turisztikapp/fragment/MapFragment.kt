@@ -3,12 +3,13 @@ package hu.bme.aut.android.turisztikapp.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.location.Location
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -18,6 +19,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -25,8 +28,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
+import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
+
 
 class MapFragment : BaseFragment(),
     ActivityCompat.OnRequestPermissionsResultCallback {
@@ -65,8 +70,8 @@ class MapFragment : BaseFragment(),
         }
 
         googleMap.setOnInfoWindowClickListener {
-            val action = MapFragmentDirections.actionMapToDetails(place = it.tag as Place)
-            findNavController().navigate(action)
+            val actionToDetails = MapFragmentDirections.actionMapToDetails(place = it.tag as Place)
+            findNavController().navigate(actionToDetails)
         }
     }
 
@@ -127,18 +132,102 @@ class MapFragment : BaseFragment(),
             for (dc in it.documents) {
                 val place = dc.toObject<Place>()
                 place ?: continue
-                val marker = map.addMarker(
+                /*val marker = map.addMarker(
                     MarkerOptions().position(
                         LatLng(
-                            place.geoPoint.latitude,
+                            place.geoPoint!!.latitude,
                             place.geoPoint.longitude
                         )
                     ).title(place.name)
-                )
-                marker?.tag = place
+                )*/
+
+                //   marker?.tag = place
+
+                val marker2 =
+                    when (place.category) {
+                        (Category.Museum) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_museum))
+                            )
+                        }
+                        (Category.Castle) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_castle))
+                            )
+                        }
+                        (Category.ArtGallery) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_artgallery))
+                            )
+                        }
+                        (Category.Library) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_library))
+                            )
+                        }
+                        (Category.Zoo) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_zoo))
+                            )
+                        }
+                        (Category.Church) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_church))
+                            )
+                        }
+                        else -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                            )
+                        }
+                    }
+                marker2?.tag = place
+
             }
         }
     }
+
 
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {

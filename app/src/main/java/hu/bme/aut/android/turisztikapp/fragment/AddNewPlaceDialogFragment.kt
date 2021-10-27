@@ -16,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -53,6 +55,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private var setCamera: Boolean = false
     private var latLng: LatLng? = LatLng(47.497913, 19.040236)
     private val placeHolder = R.drawable.ic_camera
+    private lateinit var galleryPermRequest: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +63,15 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         arguments?.let {                //megkapja az adatokat
             latLng = it.get(LATLNG) as LatLng?
         }
+
+        galleryPermRequest =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                if (it) {
+                    Toast.makeText(context, R.string.permission_granted, Toast.LENGTH_SHORT).show()
+                    openGalleryForImage()
+                } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
+                    .show()
+            }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -69,7 +81,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             makePhotoClick()
         }
         binding.placeGalleryButton.setOnClickListener {
-            handleReadContactsPermission()
+            handleGalleryPermission()
         }
         if (latLng != null) {
             binding.placeAddressEditText.setText(getAddress(latLng!!))
@@ -304,7 +316,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Figyelem!",
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
         @StringRes explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::dismiss
@@ -313,16 +325,16 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             .setTitle(title)
             .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton("OK") { dialog, id ->
+            .setPositiveButton(R.string.ok_permisson_dialog) { dialog, id ->
                 dialog.cancel()
                 onPositiveButton()
             }
-            .setNegativeButton("Exit") { dialog, id -> onNegativeButton() }
+            .setNegativeButton(R.string.exit_permission_diaog) { dialog, id -> onNegativeButton() }
             .create()
         alertDialog.show()
     }
 
-    private fun handleReadContactsPermission() {
+    private fun handleGalleryPermission() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -348,28 +360,8 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private fun requestExternalStoragePermission() {  //jogosultság elkérése
-        ActivityCompat.requestPermissions(
-            activity as AppCompatActivity,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            REQUEST_CODE_GALLERY
-        )
+        galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            REQUEST_CODE_GALLERY -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openGalleryForImage()
-                } else {
-
-                }
-                return
-            }
-        }
-    }
 
 }

@@ -5,10 +5,7 @@ import android.app.Activity
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -30,7 +27,7 @@ class CommentAdapter(private val id: String) :
         val commentText: TextView = binding.rowCommentText
         val userNameText: TextView = binding.userName
         var commentItem: Comment? = null
-        var deleteComment: ImageButton = binding.rowCommentDelete
+        var deleteComment: ImageView = binding.rowCommentDeleteIcon
 
     }
 
@@ -55,14 +52,6 @@ class CommentAdapter(private val id: String) :
             removeComment(holder.commentItem)
         }
 
-
-        /*if (position % 2 == 1) {
-            holder.itemView.setBackgroundColor(Color.parseColor("#d0f7eb"));
-
-        } else {
-            holder.itemView.setBackgroundColor(Color.parseColor(R.color));
-
-        }*/
         /*  holder.commentRate.text=comment.rate.toString()
 
           holder.commentRate.setOnClickListener {
@@ -85,6 +74,11 @@ class CommentAdapter(private val id: String) :
     fun removeComment(comment: Comment?) {
         comment ?: return
         commentList -= (comment)
+        submitList(commentList)
+    }
+
+    fun clearList() {
+        commentList.clear()
         submitList(commentList)
     }
 
@@ -134,7 +128,4 @@ class CommentAdapter(private val id: String) :
             }
         }
     }
-
-
 }
-

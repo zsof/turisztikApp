@@ -29,8 +29,8 @@ class PlaceListFragment : BaseFragment(),
     private lateinit var binding: FragmentPlaceListBinding
     private lateinit var placeListAdapter: PlaceListAdapter
     private lateinit var navController: NavController
-    private lateinit var searchView: SearchView
     private lateinit var navHostFragment: NavHostFragment
+
 
 
     override fun onCreateView(
@@ -68,51 +68,33 @@ class PlaceListFragment : BaseFragment(),
 
 
         binding.toolbar.inflateMenu(R.menu.search_menu)
-        binding.toolbar.collapseActionView()
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.search -> {
+                    val searchView = it.actionView as SearchView
+                    it.expandActionView() //egész kattintható
+                    searchView.queryHint = "Keresés"
+                    searchView.isIconified = false
 
+                    searchView.setOnQueryTextListener(
+                        object : SearchView.OnQueryTextListener {
+                            override fun onQueryTextSubmit(query: String?): Boolean {
+                                return true
+                            }
 
-        initPostsListener()
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search_menu, menu)
-
-        val searchItem = menu.findItem(R.id.search)
-        val searchView = searchItem.actionView as SearchView
-        searchView.queryHint = "Keresés"
-        searchItem.expandActionView() //egész kattintható
-        searchView.isIconified = false
-        //  searchItem.collapseActionView()
-        //MenuItemCompat.collapseActionView(searchItem)
-
-
-        searchView.setOnQueryTextListener(
-            object : SearchView.OnQueryTextListener {
-                override fun onQueryTextChange(newText: String): Boolean {
-                    placeListAdapter.filter.filter(newText)
-                    return true
+                            override fun onQueryTextChange(newText: String?): Boolean {
+                                placeListAdapter.filter.filter(newText)
+                                return true
+                            }
+                        }
+                    )
+                    true
                 }
-
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    // **Here you can get the value "query" which is entered in the search box.**
-
-                    return true
-                }
-            })
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-
-    /* override fun onBackPressed(): Boolean {
-        if (!searchView.isIconified) {
-            searchView.isIconified = true
-        } else {
-             super.onBackPressed()
+            }
+            true
         }
-        return true
-    }*/
+        initPostsListener()
+    }
 
     private fun initPostsListener() {
         val db = Firebase.firestore
@@ -130,10 +112,10 @@ class PlaceListFragment : BaseFragment(),
                         DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
                         DocumentChange.Type.REMOVED -> placeListAdapter.removePlace(dc.document.toObject())
                     }
+
                 }
             }
     }
-
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -159,7 +141,4 @@ class PlaceListFragment : BaseFragment(),
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-
-
 }
-

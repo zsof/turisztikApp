@@ -24,10 +24,8 @@
         android:name="hu.bme.aut.android.turisztikapp.fragment.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map">
-        <argument
-            android:name="place"
-            app:argType="com.google.android.gms.maps.model.LatLng" />
-        <action
+
+    <action
             android:id="@+id/action_map_to_add_new_place"
             app:destination="@+id/nav_new_place_dialog_fragment" />
         <action
@@ -44,7 +42,6 @@
     <dialog
         android:id="@+id/nav_new_place_dialog_fragment"
         android:name="hu.bme.aut.android.turisztikapp.fragment.AddNewPlaceDialogFragment">
-
 
         <action
             android:id="@+id/ok_dialog_to_list"
@@ -89,7 +86,6 @@
         <argument
             android:name="place"
             app:argType="hu.bme.aut.android.turisztikapp.data.Place" />
-
         <action
             android:id="@+id/action_details_to_logout"
             app:destination="@+id/nav_login_fragment" />

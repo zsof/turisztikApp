@@ -17,25 +17,24 @@
 
     <TextView
         android:id="@+id/rowCommentText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:gravity="left"
-        android:inputType="textCapSentences|textMultiLine"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userName"
-
         tools:text="Hozzászólás" />
 
-    <ImageButton
-        android:id="@+id/rowCommentDelete"
+    <ImageView
+        android:id="@+id/rowCommentDeleteIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_delete"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- <TextView
          android:id="@+id/rowCommentRate"

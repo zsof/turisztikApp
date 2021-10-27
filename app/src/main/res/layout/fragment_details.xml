@@ -21,20 +21,43 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_navigate_menu"
-
             app:title="@string/title"
             tools:targetApi="lollipop" />
 
-        <ImageView
-            android:id="@+id/detailsImage"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/kep"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imageDetailsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="16dp"
+            android:maxHeight="200dp"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:listitem="@layout/row_image" />
+
+        <ImageButton
+            android:id="@+id/fabUploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_image"
+            app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!--  <ImageView
+              android:id="@+id/detailsImage"
+              android:layout_width="0dp"
+              android:layout_height="0dp"
+              android:layout_marginTop="8dp"
+              android:src="@drawable/kep"
+              app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@id/toolbar" />-->
 
         <TextView
             android:id="@+id/nameDetailsText"
@@ -44,7 +67,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detailsImage"
+            app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler"
             tools:text="Nemzeti Múzeum" />
 
 
@@ -71,14 +94,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="1146 Kodály utca 4" />
 
+        <ImageView
+            android:id="@+id/descDetailsImageIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_article"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addressDetailsText" />
+
         <TextView
             android:id="@+id/descDetailsText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:layout_margin="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/descDetailsImageIcon"
             app:layout_constraintTop_toBottomOf="@id/addressDetailsText"
             tools:text="Nagyon szép múzeum" />
 
@@ -117,14 +150,13 @@
             app:layout_constraintTop_toBottomOf="@id/rateDetailsText" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/placeComment"
+            android:id="@+id/commentDetailsRecycler"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_margin="16dp"
             android:maxHeight="200dp"
             android:orientation="vertical"
             android:scrollbars="vertical"
-
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/commentDetailsEditText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -138,27 +170,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:hint="Hozzászólás"
             android:inputType="textCapSentences"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/commentSendImage"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/placeComment" />
+            app:layout_constraintTop_toBottomOf="@id/commentDetailsRecycler" />
 
         <ImageButton
             android:id="@+id/commentSendImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
-            app:layout_constraintTop_toBottomOf="@id/placeComment" />
+            app:layout_constraintTop_toBottomOf="@id/commentDetailsRecycler" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -27,12 +27,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toStartOf="@+id/rowPlaceImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rowPlaceDistance"
+        tools:text="4.0" />
+
+    <TextView
+        android:id="@+id/rowPlaceDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
         android:layout_marginLeft="8dp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/rowPlaceImage"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="4.0" />
+        app:layout_constraintTop_toBottomOf="@id/rowPlaceRate"
+        android:text="13.5km" />
 
 
     <TextView
@@ -42,7 +53,7 @@
         android:layout_margin="8dp"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/rowPlaceRate"
+        app:layout_constraintEnd_toStartOf="@id/rowPlaceDistance"
         app:layout_constraintStart_toEndOf="@+id/rowPlaceCategory"
 
         app:layout_constraintTop_toBottomOf="@+id/rowPlaceName"
@@ -68,6 +79,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+
         tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

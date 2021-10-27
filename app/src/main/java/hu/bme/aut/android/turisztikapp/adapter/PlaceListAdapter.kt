@@ -15,6 +15,7 @@ import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.RowPlacesBinding
+
 import hu.bme.aut.android.turisztikapp.fragment.PlaceListFragmentDirections
 
 
@@ -23,10 +24,6 @@ class PlaceListAdapter :
 
     private val placeList: MutableList<Place> = mutableListOf()
     private var filterList: MutableList<Place> = placeList
-
-    init {
-        this.placeList.reverse()
-    }
 
     inner class PlaceViewHolder(binding: RowPlacesBinding) : RecyclerView.ViewHolder(binding.root) {
         val textPlaceName: TextView = binding.rowPlaceName
@@ -61,7 +58,6 @@ class PlaceListAdapter :
         holder.itemView.setOnClickListener {
             val action =
                 PlaceListFragmentDirections.actionPlacelistToDetails(place = place)
-            println(place.id)
             holder.itemView.findNavController().navigate(action)
         }
 
@@ -99,34 +95,24 @@ class PlaceListAdapter :
         placeList -= (place)
         placeList.sortBy { it.name }
         submitList(placeList)
-    }
 
-    override fun getItemCount(): Int {
-        return placeList.size
     }
 
     override fun getFilter(): Filter {
-        println("GEEEEETfiltereer-------------------")
 
-        val flowerFilter = object : Filter() {
-            override fun performFiltering(charSequence: CharSequence): FilterResults {
-                println("filtereer-------------------")
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence?): FilterResults {
                 val searchString = charSequence.toString()
-                //val tempList: MutableList<Place> = ArrayList()
 
                 if (searchString.isEmpty()) {
                     filterList = placeList
-                    //  tempList.addAll(filterList)
 
                 } else {
                     val tempList: MutableList<Place> = mutableListOf()
 
                     for (place: Place in placeList) {
-                        /*if (place.name.replaceFirstChar { it.lowercase() }
-                                .contains(searchString.replaceFirstChar { it.lowercase() })) {
+                        if (place.name.lowercase().contains(searchString.lowercase()))
                             tempList.add(place)
-                        }*/
-                        if (place.name.contains(searchString)) tempList.add(place)
                     }
                     filterList = tempList
                 }
@@ -138,21 +124,14 @@ class PlaceListAdapter :
 
             }
 
-            @SuppressLint("NotifyDataSetChanged")
             override fun publishResults(
                 charSequence: CharSequence?,
                 filterResults: FilterResults?
             ) {
-                // placeList.clear()
-                //placeList.addAll(filterResults?.values as MutableList<Place>)
-                filterList = filterResults?.values as MutableList<Place>
-                println("filter: ${filterList.size}")
-                notifyDataSetChanged()
-                submitList(filterList)
+                val ujlista = filterResults?.values as MutableList<Place>
+                submitList(ujlista)
             }
         }
-
-        return flowerFilter
     }
 
     companion object {
