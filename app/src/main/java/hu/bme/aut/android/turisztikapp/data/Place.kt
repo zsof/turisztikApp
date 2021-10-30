@@ -1,7 +1,5 @@
 package hu.bme.aut.android.turisztikapp.data
 
-
-import androidx.room.Entity
 import com.google.firebase.firestore.GeoPoint
 import java.io.Serializable
 
@@ -10,8 +8,8 @@ data class Place(
     val id: String = "",
     val name: String = "",
     val address: String = "",
-
     val geoPoint: GeoPoint = GeoPoint(47.497913, 19.040236),
+    //val distance: Double = 2.0,
     val description: String = "",
     val rate: Float? = 2F,
     val image: String? = "",

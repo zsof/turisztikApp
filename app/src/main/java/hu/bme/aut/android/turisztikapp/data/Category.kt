@@ -15,11 +15,5 @@ enum class Category {
             }
             return category
         }
-
-        /* fun toInt(category: Category): Int {
-             return category.ordinal
-         }*/
-
     }
-
 }

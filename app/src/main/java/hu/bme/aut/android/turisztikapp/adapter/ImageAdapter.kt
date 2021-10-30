@@ -4,17 +4,13 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import hu.bme.aut.android.turisztikapp.data.Comment
 import hu.bme.aut.android.turisztikapp.data.Image
 import hu.bme.aut.android.turisztikapp.databinding.RowImageBinding
-
 
 class ImageAdapter(private val id: String) :
     ListAdapter<Image, ImageAdapter.ViewHolder>(itemCallback) {
@@ -35,7 +31,6 @@ class ImageAdapter(private val id: String) :
                 false
             )
         )
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -80,5 +75,4 @@ class ImageAdapter(private val id: String) :
             }
         }
     }
-
 }

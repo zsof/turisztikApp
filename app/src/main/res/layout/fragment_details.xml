@@ -24,7 +24,6 @@
             app:title="@string/title"
             tools:targetApi="lollipop" />
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/imageDetailsRecycler"
             android:layout_width="match_parent"
@@ -45,8 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_image"
-            app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler" />
 
         <!--  <ImageView
               android:id="@+id/detailsImage"
@@ -75,8 +74,8 @@
             android:id="@+id/placeDetailsImageIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
             android:layout_margin="16dp"
+            android:paddingTop="8dp"
             android:src="@drawable/ic_map"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameDetailsText" />
@@ -89,9 +88,9 @@
             android:paddingRight="8dp"
             android:textSize="20sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/placeDetailsImageIcon"
             app:layout_constraintTop_toBottomOf="@id/nameDetailsText"
-            app:layout_constraintEnd_toEndOf="parent"
             tools:text="1146 Kodály utca 4" />
 
         <ImageView
@@ -107,9 +106,9 @@
             android:id="@+id/descDetailsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_margin="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/descDetailsImageIcon"
             app:layout_constraintTop_toBottomOf="@id/addressDetailsText"
@@ -145,7 +144,6 @@
             android:text="Hozzászólások:"
             android:textSize="20sp"
             android:textStyle="bold"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rateDetailsText" />
 
@@ -169,9 +167,9 @@
             android:id="@+id/commentDetailsEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginBottom="16dp"
-            android:hint="Hozzászólás"
+            android:hint="@string/comment_text"
             android:inputType="textCapSentences"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/commentSendImage"
@@ -182,15 +180,14 @@
             android:id="@+id/commentSendImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/ic_send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
             app:layout_constraintTop_toBottomOf="@id/commentDetailsRecycler" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

@@ -4,6 +4,10 @@
         android:id="@+id/menu_map_places"
         android:icon="@drawable/ic_budapest"
         android:title="@string/l_tnival_k" />
+    <item
+        android:id="@+id/menu_map_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings" />
 
     <item
         android:id="@+id/menu_map_logout"

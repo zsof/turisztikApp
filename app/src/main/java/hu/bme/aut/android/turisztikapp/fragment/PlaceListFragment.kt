@@ -21,17 +21,12 @@ import hu.bme.aut.android.turisztikapp.adapter.PlaceListAdapter
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 
-
 class PlaceListFragment : BaseFragment(),
     OnNavigationItemSelectedListener {
-
-
     private lateinit var binding: FragmentPlaceListBinding
     private lateinit var placeListAdapter: PlaceListAdapter
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +36,6 @@ class PlaceListFragment : BaseFragment(),
         return inflater.inflate(R.layout.fragment_place_list, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPlaceListBinding.bind(view)
@@ -49,7 +43,6 @@ class PlaceListFragment : BaseFragment(),
         placeListAdapter = PlaceListAdapter()
         binding.placeList.layoutManager = LinearLayoutManager(context)
         binding.placeList.adapter = placeListAdapter
-
 
         val dividerItemDecoration = DividerItemDecoration(  //recyclerview row-ok közötti elválasztó
             binding.placeList.context,
@@ -65,7 +58,6 @@ class PlaceListFragment : BaseFragment(),
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
         binding.navView.setNavigationItemSelectedListener(this)
-
 
         binding.toolbar.inflateMenu(R.menu.search_menu)
         binding.toolbar.setOnMenuItemClickListener {

@@ -1,22 +1,14 @@
 package hu.bme.aut.android.turisztikapp.adapter
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.data.Comment
-import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.RowCommentBinding
-
 
 class CommentAdapter(private val id: String) :
     ListAdapter<Comment, CommentAdapter.ViewHolder>(itemCallback) {
@@ -28,7 +20,6 @@ class CommentAdapter(private val id: String) :
         val userNameText: TextView = binding.userName
         var commentItem: Comment? = null
         var deleteComment: ImageView = binding.rowCommentDeleteIcon
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,7 +30,6 @@ class CommentAdapter(private val id: String) :
                 false
             )
         )
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -67,8 +57,6 @@ class CommentAdapter(private val id: String) :
             commentList.sortBy { it.comment }
             submitList(commentList)
         }
-
-
     }
 
     fun removeComment(comment: Comment?) {
@@ -77,12 +65,7 @@ class CommentAdapter(private val id: String) :
         submitList(commentList)
     }
 
-    fun clearList() {
-        commentList.clear()
-        submitList(commentList)
-    }
-
-    /*private fun showDialog() {
+    /*private fun showDialog() {   //rate alertdialog
         val popDialog = AlertDialog.Builder()
         val linearLayout = LinearLayout(parent.context)
         val rating = RatingBar(context)
@@ -114,7 +97,6 @@ class CommentAdapter(private val id: String) :
         popDialog.create()
         popDialog.show()
     }*/
-
 
     companion object {
         object itemCallback : DiffUtil.ItemCallback<Comment>() {

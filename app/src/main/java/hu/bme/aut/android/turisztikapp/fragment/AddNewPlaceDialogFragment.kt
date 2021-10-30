@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
@@ -41,7 +42,6 @@ import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
 
-
 class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
 
     companion object {
@@ -55,7 +55,9 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private var setCamera: Boolean = false
     private var latLng: LatLng? = LatLng(47.497913, 19.040236)
     private val placeHolder = R.drawable.ic_camera
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
+    private lateinit var currentLocation: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +74,29 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
                     .show()
             }
+        /* fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+         if (ActivityCompat.checkSelfPermission(
+                 requireContext(),
+                 Manifest.permission.ACCESS_FINE_LOCATION
+             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                 requireContext(),
+                 Manifest.permission.ACCESS_COARSE_LOCATION
+             ) != PackageManager.PERMISSION_GRANTED
+         ) {
+             // TODO: Consider calling
+             //    ActivityCompat#requestPermissions
+             // here to request the missing permissions, and then overriding
+             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+             //                                          int[] grantResults)
+             // to handle the case where the user grants the permission. See the documentation
+             // for ActivityCompat#requestPermissions for more details.
+             return
+         }
+         fusedLocationClient.lastLocation
+             .addOnSuccessListener {
+                 currentLocation=it.latitude as LatLng
+                 currentLocation=it.longitude as LatLng
+             }*/
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -98,7 +123,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_MODE_CHANGED)  //scrollable alert
         return dialog
     }
-
 
     private fun sendClick() {
         if (!validateForm()) {
@@ -136,13 +160,10 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 e.printStackTrace()
             }
         }
-
     }
-
 
     private fun validateForm() =
         binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
-
 
     private fun uploadPlace(image: String? = placeHolder.toString()) {  //adatbázist összeköti a layout-tal
         val newPlace = Place(
@@ -154,6 +175,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             geoPoint = GeoPoint(latLng!!.latitude, latLng!!.longitude),
             description = binding.placeDescEditText.text.toString()
                 .replaceFirstChar { it.uppercase() },
+            // distance=distFrom(latLng!!.latitude, latLng!!.longitude, currentLocation.latitude, currentLocation.longitude),
             rate = binding.placeRatingBar.rating,
             image = image,
             category = Category.getByOrdinal(binding.placeCategorySpinner.selectedItemPosition)
@@ -167,7 +189,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             )
         }
 
-
         val db = Firebase.firestore
 
         db.collection("places")
@@ -179,6 +200,24 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             .addOnFailureListener { e ->
                 Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun distFrom(
+        lat1: Double, lng1: Double, lat2: Double, lng2: Double
+    ): Double {
+        val earthRadius = 3958.75
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLng = Math.toRadians(lng2 - lng1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(
+            Math.toRadians(
+                lat2
+            )
+        ) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2)
+        val c =
+            2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return earthRadius * c
     }
 
     private fun getAddress(latLng: LatLng): String {
@@ -362,6 +401,4 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private fun requestExternalStoragePermission() {  //jogosultság elkérése
         galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
-
-
 }

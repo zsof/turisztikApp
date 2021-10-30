@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -37,21 +38,18 @@ import java.util.*
 
 
 class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding: FragmentDetailsBinding //fragment binding!!
+    private lateinit var binding: FragmentDetailsBinding
     private var place: Place? = null
     private lateinit var commentAdapter: CommentAdapter
     private lateinit var imageAdapter: ImageAdapter
     private var rateSum: Float = 0F
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
-    private val placeHolder = R.drawable.ic_camera
-
 
     companion object {
         const val PLACE = "place"
         private const val REQUEST_CODE_CAMERA_DETAILS = 103
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +71,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentDetailsBinding.bind(view)
-
 
         binding.commentDetailsRecycler.layoutManager =
             LinearLayoutManager(context)
@@ -124,7 +121,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 explanation = place?.description
             )
         }
-
     }
 
     private fun showRationaleDialog(
@@ -143,21 +139,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             .create()
         alertDialog.show()
     }
-
-    /*private fun getComments() {
-        Firebase.firestore.collection("comment").get().addOnSuccessListener {
-            commentAdapter.clearList()
-            for (dc in it.documents) {
-                commentAdapter.addComment(dc.toObject())
-                *//*when (dc.type) {
-                    DocumentChange.Type.ADDED -> commentAdapter.addComment(dc.document.toObject())
-                    DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
-                    DocumentChange.Type.REMOVED -> commentAdapter.removeComment(dc.document.toObject())
-                }*//*
-
-            }
-        }
-    }*/
 
     private fun initPostsListener() {
         val db = Firebase.firestore
@@ -229,7 +210,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 Toast.makeText(activity, "comment created", Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener { e -> toast(e.toString()) }
-
     }
 
     private fun makePhotoClick() {
@@ -309,7 +289,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
              Toast.makeText(context, "You haven't picked Image", Toast.LENGTH_LONG).show()
          }
      }*/
-
 
     private fun setToolbar() {
         navHostFragment =

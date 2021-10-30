@@ -8,7 +8,6 @@
     android:background="@drawable/listitem_backgroung"
     android:orientation="horizontal">
 
-
     <TextView
         android:id="@+id/rowPlaceName"
         android:layout_width="wrap_content"
@@ -28,22 +27,22 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@id/rowPlaceDistance"
         app:layout_constraintEnd_toStartOf="@+id/rowPlaceImage"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/rowPlaceDistance"
         tools:text="4.0" />
 
     <TextView
         android:id="@+id/rowPlaceDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
         android:layout_marginLeft="8dp"
+        android:text="13.5km"
+        android:textColor="@color/black"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/rowPlaceImage"
-        app:layout_constraintTop_toBottomOf="@id/rowPlaceRate"
-        android:text="13.5km" />
+        app:layout_constraintTop_toBottomOf="@id/rowPlaceRate" />
 
 
     <TextView
@@ -79,7 +78,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

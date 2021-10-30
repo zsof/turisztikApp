@@ -32,6 +32,12 @@
     <string name="explanation_permission_location">Az eszköznek szüksége van az Ön helyadatainak megjelenítéséhez</string>
     <string name="permission_denied">Endegély megtagadva</string>
     <string name="permission_granted">Engedély megadva</string>
+    <string name="not_verify">Nincs megerősítve</string>
+    <string name="verifyEmail">Megerősítés</string>
+    <string name="forgetting_password"><u>Elfelejtette jelszavát?</u></string>
+    <string name="settings">Beállítások</string>
+    <string name="password">Jelszó</string>
+    <string name="comment_text">Hozzászólás</string>
 
     <string-array name="category_items">
         <item>Múzeum</item>

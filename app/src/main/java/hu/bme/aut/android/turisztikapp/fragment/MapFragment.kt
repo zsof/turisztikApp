@@ -3,9 +3,6 @@ package hu.bme.aut.android.turisztikapp.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +16,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -32,10 +29,8 @@ import hu.bme.aut.android.turisztikapp.data.Category
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentMapBinding
 
-
 class MapFragment : BaseFragment(),
     ActivityCompat.OnRequestPermissionsResultCallback {
-
 
     private lateinit var binding: FragmentMapBinding
     private lateinit var map: GoogleMap
@@ -51,10 +46,10 @@ class MapFragment : BaseFragment(),
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+
         map = googleMap
         getPlaces()
         val budapest = LatLng(47.497913, 19.040236)
-        // .icon(BitmapDescriptorFactory.fromResource(R.drawable.dollar ))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(budapest))
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(11F))
 
@@ -95,20 +90,25 @@ class MapFragment : BaseFragment(),
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
         binding.toolbarMap.inflateMenu(R.menu.menu_map)
         binding.toolbarMap.setOnMenuItemClickListener {
-
             when (it.itemId) {
                 R.id.menu_map_logout -> {
                     FirebaseAuth.getInstance().signOut()
                     findNavController().navigate(
                         R.id.action_map_to_logout,
+                        null
+                    )
+                }
+                R.id.menu_map_settings -> {
+                    findNavController().navigate(
+                        R.id.action_map_to_settings,
                         null
                     )
                 }
@@ -118,12 +118,10 @@ class MapFragment : BaseFragment(),
                         null
                     )
                 }
-
             }
             true
         }
     }
-
 
     private fun getPlaces() {
         if (!::map.isInitialized) return
@@ -132,18 +130,8 @@ class MapFragment : BaseFragment(),
             for (dc in it.documents) {
                 val place = dc.toObject<Place>()
                 place ?: continue
-                /*val marker = map.addMarker(
-                    MarkerOptions().position(
-                        LatLng(
-                            place.geoPoint!!.latitude,
-                            place.geoPoint.longitude
-                        )
-                    ).title(place.name)
-                )*/
 
-                //   marker?.tag = place
-
-                val marker2 =
+                val marker =
                     when (place.category) {
                         (Category.Museum) -> {
                             map.addMarker(
@@ -222,12 +210,10 @@ class MapFragment : BaseFragment(),
                             )
                         }
                     }
-                marker2?.tag = place
-
+                marker?.tag = place
             }
         }
     }
-
 
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
@@ -235,7 +221,6 @@ class MapFragment : BaseFragment(),
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
     }
-
 
     @SuppressLint("MissingPermission")
     private fun handleFineLocationPermission() {
@@ -284,5 +269,4 @@ class MapFragment : BaseFragment(),
     private fun requestFineLocationPermission() {  //jogosultság elkérése
         locationPermRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
-
 }

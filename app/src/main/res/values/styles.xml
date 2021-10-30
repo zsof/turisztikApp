@@ -5,6 +5,10 @@
         <!-- Color of the title text in the Toolbar -->
         <item name="android:textColorPrimary">@color/teal_200</item>
 
+
     </style>
 
+    <style name="Button.Theme" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/teal_200</item>
+    </style>
 </resources>
