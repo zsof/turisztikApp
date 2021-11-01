@@ -43,7 +43,7 @@ open class BaseFragment : Fragment() {
     }
 
      protected fun toast(message: String?) {
-         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+         Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
      }
 
     open fun onBackPressed() = true

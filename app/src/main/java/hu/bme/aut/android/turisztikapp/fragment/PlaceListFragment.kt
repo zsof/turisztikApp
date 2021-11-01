@@ -128,6 +128,11 @@ class PlaceListFragment : BaseFragment(),
                     R.id.action_placelist_to_map,
                     null
                 )
+            R.id.menu_settings ->
+                findNavController().navigate(
+                    R.id.action_placelist_to_settings,
+                    null
+                )
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)

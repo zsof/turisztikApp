@@ -55,9 +55,8 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private var setCamera: Boolean = false
     private var latLng: LatLng? = LatLng(47.497913, 19.040236)
     private val placeHolder = R.drawable.ic_camera
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
-    private lateinit var currentLocation: LatLng
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,29 +73,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
                     .show()
             }
-        /* fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-         if (ActivityCompat.checkSelfPermission(
-                 requireContext(),
-                 Manifest.permission.ACCESS_FINE_LOCATION
-             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                 requireContext(),
-                 Manifest.permission.ACCESS_COARSE_LOCATION
-             ) != PackageManager.PERMISSION_GRANTED
-         ) {
-             // TODO: Consider calling
-             //    ActivityCompat#requestPermissions
-             // here to request the missing permissions, and then overriding
-             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-             //                                          int[] grantResults)
-             // to handle the case where the user grants the permission. See the documentation
-             // for ActivityCompat#requestPermissions for more details.
-             return
-         }
-         fusedLocationClient.lastLocation
-             .addOnSuccessListener {
-                 currentLocation=it.latitude as LatLng
-                 currentLocation=it.longitude as LatLng
-             }*/
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -202,23 +178,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             }
     }
 
-    private fun distFrom(
-        lat1: Double, lng1: Double, lat2: Double, lng2: Double
-    ): Double {
-        val earthRadius = 3958.75
-        val dLat = Math.toRadians(lat2 - lat1)
-        val dLng = Math.toRadians(lng2 - lng1)
-        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(
-            Math.toRadians(
-                lat2
-            )
-        ) *
-                Math.sin(dLng / 2) * Math.sin(dLng / 2)
-        val c =
-            2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return earthRadius * c
-    }
 
     private fun getAddress(latLng: LatLng): String {
         val geocoder = Geocoder(context)

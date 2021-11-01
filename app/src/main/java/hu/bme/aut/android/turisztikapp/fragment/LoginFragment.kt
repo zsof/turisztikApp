@@ -58,7 +58,7 @@ class LoginFragment : BaseFragment() {
                 showRationaleDialog(
                     explanation = "Ha elfelejtette jelszavát, nyomjon a Küldés gombra. " +
                             "Az emailben kapott linken keresztül meg tudja változtatni jelszavát!",
-                    onPositiveButton = onClickOkButton()
+                    onPositiveButton = this::onClickOkButton
                 )
             }
 
@@ -89,7 +89,7 @@ class LoginFragment : BaseFragment() {
         @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Új jelszó küldése",
         explanation: String?,
         onNegativeButton: () -> Unit = this::onDestroy,
-        onPositiveButton: Unit
+        onPositiveButton: () -> Unit
 
     ) {
 
@@ -99,7 +99,7 @@ class LoginFragment : BaseFragment() {
             .setMessage(explanation)
             .setPositiveButton("Küldés") { dialog, id ->
                 dialog.cancel()
-                onPositiveButton
+                onPositiveButton()
             }
             .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
             .create()

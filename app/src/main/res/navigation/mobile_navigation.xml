@@ -66,6 +66,9 @@
         android:label="PlaceList"
         tools:layout="@layout/fragment_place_list">
         <action
+            android:id="@+id/action_placelist_to_settings"
+            app:destination="@+id/nav_settings_fragment" />
+        <action
             android:id="@+id/action_placelis_to_logout"
             app:destination="@+id/nav_login_fragment" />
         <action
@@ -89,6 +92,9 @@
             android:name="place"
             app:argType="hu.bme.aut.android.turisztikapp.data.Place" />
         <action
+            android:id="@+id/action_details_to_settings"
+            app:destination="@+id/nav_settings_fragment" />
+        <action
             android:id="@+id/action_details_to_logout"
             app:destination="@+id/nav_login_fragment" />
         <action
@@ -104,7 +110,18 @@
         android:name="hu.bme.aut.android.turisztikapp.fragment.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings">
-
+        <action
+            android:id="@+id/action_settings_to_settings"
+            app:destination="@+id/nav_settings_fragment" />
+        <action
+            android:id="@+id/action_settings_to_logout"
+            app:destination="@+id/nav_login_fragment" />
+        <action
+            android:id="@+id/action_settings_to_place_list"
+            app:destination="@+id/nav_placelist_fragment" />
+        <action
+            android:id="@+id/action_settings_to_map"
+            app:destination="@+id/nav_map_fragment" />
     </fragment>
 
 </navigation>

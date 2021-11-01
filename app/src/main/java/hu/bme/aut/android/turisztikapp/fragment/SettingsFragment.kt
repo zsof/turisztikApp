@@ -1,33 +1,66 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.*
+import com.google.firebase.firestore.auth.User
+import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentSettingsBinding
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.net.URLEncoder
+import java.util.*
 
 
-class SettingsFragment : BaseFragment() {
+class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         const val REQUEST_CODE_CAMERA = 100
         const val REQUEST_CODE_GALLERY = 101
+
     }
 
+    private val defaultImage = R.drawable.ic_profile
+    private var newImageUri: Uri? = null
     private lateinit var binding: FragmentSettingsBinding
     private val currentUser = FirebaseAuth.getInstance().currentUser
-    private lateinit var updates: UserProfileChangeRequest
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
+    private var reAuthSucces: Boolean = false
+    private lateinit var galleryPermRequest: ActivityResultLauncher<String>
+    private var inputDialogText: String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +68,18 @@ class SettingsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_settings, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        galleryPermRequest =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                if (it) {
+                    Toast.makeText(context, R.string.permission_granted, Toast.LENGTH_SHORT).show()
+                    uploadPhotoFromGallery()
+                } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
+                    .show()
+            }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,6 +91,7 @@ class SettingsFragment : BaseFragment() {
             binding.profileName.text = it.displayName?.capitalize()
             binding.profileEmail.text = it.email
 
+
             if (it.isEmailVerified) {
                 binding.emailVerify.visibility = View.INVISIBLE
             } else {
@@ -55,23 +101,76 @@ class SettingsFragment : BaseFragment() {
 
         }
 
+
         binding.emailVerify.setOnClickListener {
             currentUser?.sendEmailVerification()
                 ?.addOnCompleteListener {
                     if (it.isSuccessful) {
                         toast("Megerősítő email elküldve!")
-                        binding.emailVerify.visibility = View.INVISIBLE
-                    } else toast(it.exception?.message)
+                        binding.emailVerify.text = "Megerősítő email elküldve"
+                    } else toast(it.exception?.localizedMessage)
                 }
         }
 
         binding.profileNameChangeIcon.setOnClickListener {
             showNameChangeDialog(
-            )
+                title = "Becenév",
+                inputTextHint = "Név",
+                inputTextType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+
+                )
+        }
+        binding.profileEmailChangeIcon.setOnClickListener {
+
+            if (reAuthSucces)
+                showEmailChangeDialog()
+            else {
+                binding.etReAuth.visibility = View.VISIBLE
+                binding.btnAuth.visibility = View.VISIBLE
+                binding.til.visibility = View.VISIBLE
+            }
+        }
+
+        binding.profilePasswordChangeIcon.setOnClickListener {
+            if (reAuthSucces)
+                showPasswordChangeDialog()
+            else {
+                binding.etReAuth.visibility = View.VISIBLE
+                binding.btnAuth.visibility = View.VISIBLE
+                binding.til.visibility = View.VISIBLE
+            }
+        }
+
+        binding.btnAuth.setOnClickListener {
+            currentUser?.let {
+                val credential =
+                    EmailAuthProvider.getCredential(it.email!!, binding.etReAuth.text.toString())
+
+                it.reauthenticate(credential)
+                    .addOnSuccessListener {
+                        toast("Sikeres authentikáció!")
+                        binding.etReAuth.visibility = View.INVISIBLE
+                        binding.btnAuth.visibility = View.INVISIBLE
+                        binding.til.visibility = View.INVISIBLE
+
+                        reAuthSucces = true
+                        binding.profileAuthCheckbox.isChecked = true
+                    }
+                    .addOnFailureListener {
+                        toast(it.localizedMessage)
+
+                        reAuthSucces = false
+                    }
+            }
         }
 
         binding.btnSave.setOnClickListener {
-            currentUser?.updateProfile(updates)
+            val updates = UserProfileChangeRequest.Builder()
+            updates.displayName = inputDialogText
+            if (newImageUri != null)
+                updates.photoUri = newImageUri
+
+            currentUser?.updateProfile(updates.build())
                 ?.addOnSuccessListener {
                     toast("Profil sikeresen frissítve")
 
@@ -81,28 +180,282 @@ class SettingsFragment : BaseFragment() {
                 }
         }
 
+        binding.profileImage.setOnClickListener {
+            showImageDialog()
+            //makePhotoClick()
+        }
+        setToolbar()
+    }
+
+    private fun showImageDialog(
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Válaszd ki, honnan töltöd fel!",
+    ) {
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setCancelable(false)
+            .setPositiveButton("Galéria") { dialog, id ->
+                handleGalleryPermission()
+            }
+            .setNegativeButton("Kamera") { dialog, id -> makePhotoClick() }
+
+            .create()
+        alertDialog.show()
     }
 
     private fun showNameChangeDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Becenév",
-        onNegativeButton: () -> Unit = this::onDestroy
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String?,
+        onNegativeButton: () -> Unit = this::onDestroy,
+        inputTextHint: String?,
+        inputTextType: Int
     ) {
+
         val inputText = EditText(context)
-        inputText.hint = "Név"
-        inputText.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        inputText.hint = inputTextHint
+        inputText.inputType = inputTextType
+
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setCancelable(false)
             .setPositiveButton("Ok") { dialog, id ->
                 dialog.cancel()
-                binding.profileName.text = inputText.text.toString()
-                updates = UserProfileChangeRequest.Builder()
-                    .setDisplayName(inputText.text.toString())
-                    .build()
+                if (inputText.text.isNotEmpty()) {
+                    binding.profileName.text = inputText.text.toString()
+                }
+                inputDialogText = inputText.text.toString()
             }
             .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
             .setView(inputText)
             .create()
         alertDialog.show()
     }
+
+    private fun showEmailChangeDialog(
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Email-cím változtatás",
+        onNegativeButton: () -> Unit = this::onDestroy
+    ) {
+        val inputText = EditText(context)
+        inputText.hint = "Új Email-cím"
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setCancelable(false)
+            .setPositiveButton("Ok") { dialog, id ->
+                dialog.cancel()
+                if (inputText.text.isNotEmpty())
+                    currentUser?.updateEmail(inputText.text.toString())
+                        ?.addOnSuccessListener {
+                            binding.profileEmail.text = inputText.text.toString()
+                            toast("Email-cím sikeresen frisstíve!")
+                        }
+                        ?.addOnFailureListener {
+                            toast(it.localizedMessage)
+                        }
+            }
+            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setView(inputText)
+            .create()
+        alertDialog.show()
+    }
+
+    private fun showPasswordChangeDialog(
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Jelszó változtatás",
+        onNegativeButton: () -> Unit = this::onDestroy
+    ) {
+        val inputText = EditText(context)
+        inputText.hint = "Új jelszó"
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setCancelable(false)
+            .setPositiveButton("Ok") { dialog, id ->
+                dialog.cancel()
+                if (inputText.text.isNotEmpty())
+                    currentUser?.updatePassword(inputText.text.toString())
+                        ?.addOnSuccessListener {
+                            toast("Jelszó sikeresen frisstíve!")
+                        }
+                        ?.addOnFailureListener {
+                            toast(it.localizedMessage)
+                        }
+            }
+            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setView(inputText)
+            .create()
+        alertDialog.show()
+    }
+
+    private fun makePhotoClick() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
+    }
+
+    private fun uploadPhotoFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_CODE_GALLERY)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_CAMERA && resultCode == Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            binding.profileImage.setImageBitmap(
+                Bitmap.createScaledBitmap(
+                    imageBitmap,
+                    binding.profileImage.width,
+                    binding.profileImage.height,
+                    false
+                )
+            )
+            binding.btnSave.isEnabled = false
+            uploadProfileImage(imageBitmap)
+        } else if (requestCode == REQUEST_CODE_GALLERY && resultCode == Activity.RESULT_OK) {
+            try {
+                val imageUri = data?.data
+                val imageStream: InputStream? = imageUri?.let {
+                    activity?.applicationContext?.contentResolver?.openInputStream(
+                        it
+                    )
+                }
+                val selectedImage = BitmapFactory.decodeStream(imageStream)
+                binding.profileImage.setImageBitmap(
+                    Bitmap.createScaledBitmap(
+                        selectedImage,
+                        binding.profileImage.width,
+                        binding.profileImage.height,
+                        false
+                    )
+                )
+                uploadProfileImage(selectedImage)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                toast("Valami hiba történt!")
+            }
+        } else {
+            toast("Nem választottál fotót!")
+        }
+    }
+
+    private fun uploadProfileImage(bitmap: Bitmap) {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val imageInBytes = baos.toByteArray()
+
+        val storageReference = FirebaseStorage.getInstance().reference
+        val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
+
+        val newImageRef =
+            storageReference.child("images/$newImageName")
+
+        newImageRef.putBytes(imageInBytes)
+            .addOnFailureListener { exception ->
+                toast(exception.localizedMessage)
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
+                }
+                newImageRef.downloadUrl
+            }
+            .addOnSuccessListener {
+                toast("Lefutottsucecs")
+                newImageUri = it
+                binding.btnSave.isEnabled = true
+            }
+
+    }
+
+    private fun setToolbar() {
+        navHostFragment =
+            (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        //  binding.navView.setNavigationItemSelectedListener(this)
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        reAuthSucces = false
+        binding.etReAuth.text.clear()
+        binding.profileAuthCheckbox.isChecked = false
+    }
+
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                findNavController().navigate(
+                    R.id.action_settings_to_logout,
+                    null
+                )
+            }
+            R.id.menu_places ->
+                findNavController().navigate(
+                    R.id.action_settings_to_place_list,
+                    null
+                )
+            R.id.menu_map ->
+                findNavController().navigate(
+                    R.id.action_settings_to_map,
+                    null
+                )
+        }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun handleGalleryPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
+                    activity as AppCompatActivity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            ) {
+                showRationaleDialog(
+                    explanation = R.string.contacts_permission_explanation,
+                    onPositiveButton = this::requestExternalStoragePermission
+                )
+
+            } else {
+                requestExternalStoragePermission()
+            }
+        } else {
+            uploadPhotoFromGallery()
+        }
+    }
+
+    private fun showRationaleDialog(
+        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
+        @StringRes explanation: Int,
+        onPositiveButton: () -> Unit,
+        onNegativeButton: () -> Unit = this::onDestroy
+    ) {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setCancelable(false)
+            .setMessage(explanation)
+            .setPositiveButton(R.string.ok_permisson_dialog) { dialog, id ->
+                dialog.cancel()
+                onPositiveButton()
+            }
+            .setNegativeButton(R.string.exit_permission_diaog) { dialog, id -> onNegativeButton() }
+            .create()
+        alertDialog.show()
+    }
+
+    private fun requestExternalStoragePermission() {  //jogosultság elkérése
+        galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
 }
+
