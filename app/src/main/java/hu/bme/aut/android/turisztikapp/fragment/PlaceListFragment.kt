@@ -48,7 +48,8 @@ class PlaceListFragment : BaseFragment(),
             binding.placeList.context,
             (binding.placeList.layoutManager as LinearLayoutManager).orientation
         )
-        dividerItemDecoration.setDrawable(context?.getDrawable(R.drawable.recyclerview_divider)!!)
+        context?.getDrawable(R.drawable.recyclerview_divider)
+            ?.let { dividerItemDecoration.setDrawable(it) }
         binding.placeList.addItemDecoration(dividerItemDecoration)
 
         navHostFragment =

@@ -4,12 +4,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -33,6 +35,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.data.Category
+import hu.bme.aut.android.turisztikapp.data.Image
+import hu.bme.aut.android.turisztikapp.data.MyGeoPoint
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.DialogAddNewPlaceBinding
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
@@ -41,6 +45,7 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
+
 
 class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
 
@@ -53,16 +58,17 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     private lateinit var binding: DialogAddNewPlaceBinding
     private var setGallery: Boolean = false
     private var setCamera: Boolean = false
-    private var latLng: LatLng? = LatLng(47.497913, 19.040236)
+    private var latLng: LatLng = LatLng(47.497913, 19.040236)
     private val placeHolder = R.drawable.ic_camera
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
+    private var newPlace: Place? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {                //megkapja az adatokat
-            latLng = it.get(LATLNG) as LatLng?
+            latLng = it.get(LATLNG) as LatLng
         }
 
         galleryPermRequest =
@@ -142,16 +148,15 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         binding.placeNameEditText.validateNonEmpty() && binding.placeAddressEditText.validateNonEmpty()
 
     private fun uploadPlace(image: String? = placeHolder.toString()) {  //adatbázist összeköti a layout-tal
-        val newPlace = Place(
+        newPlace = Place(
             id = UUID.randomUUID().toString(),
             name = binding.placeNameEditText.text.toString()
                 .replaceFirstChar { it.uppercase() },
             address = binding.placeAddressEditText.text.toString()
                 .replaceFirstChar { it.uppercase() },
-            geoPoint = GeoPoint(latLng!!.latitude, latLng!!.longitude),
+            geoPoint = MyGeoPoint(latLng.latitude, latLng.longitude),
             description = binding.placeDescEditText.text.toString()
                 .replaceFirstChar { it.uppercase() },
-            // distance=distFrom(latLng!!.latitude, latLng!!.longitude, currentLocation.latitude, currentLocation.longitude),
             rate = binding.placeRatingBar.rating,
             image = image,
             category = Category.getByOrdinal(binding.placeCategorySpinner.selectedItemPosition)
@@ -168,7 +173,7 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         val db = Firebase.firestore
 
         db.collection("places")
-            .add(newPlace)
+            .add(newPlace!!)
             .addOnSuccessListener {
 
                 // Toast.makeText(activity, "Place created", Toast.LENGTH_LONG).show()
@@ -276,7 +281,32 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             }
             .addOnSuccessListener { downloadUri ->
                 uploadPlace(downloadUri.toString())
+                val newImage = newPlace?.let {
+                    Image(
+                        id = UUID.randomUUID().toString(),
+                        image = downloadUri.toString(),
+                        placeId = it.id
+                    )
+                }
+
+                val db = Firebase.firestore
+
+
+                if (newImage != null) {
+                    db.collection("images")
+                        .add(newImage)
+                        .addOnSuccessListener {
+                            //Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            // Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                        }
+                }
+
+
             }
+
+
     }
 
     private fun uploadPlaceWithImageFromGallery() {
@@ -302,6 +332,27 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             }
             .addOnSuccessListener { downloadUri ->
                 uploadPlace(downloadUri.toString())
+                val newImage = newPlace?.let {
+                    Image(
+                        id = UUID.randomUUID().toString(),
+                        image = downloadUri.toString(),
+                        placeId = it.id
+                    )
+                }
+
+                val db = Firebase.firestore
+
+
+                if (newImage != null) {
+                    db.collection("images")
+                        .add(newImage)
+                        .addOnSuccessListener {
+                            //Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            // Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                        }
+                }
             }
     }
 

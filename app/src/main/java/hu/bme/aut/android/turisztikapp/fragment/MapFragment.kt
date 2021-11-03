@@ -131,17 +131,17 @@ class MapFragment : BaseFragment(),
                 val place = dc.toObject<Place>()
                 place ?: continue
 
-                val marker =
-                    when (place.category) {
-                        (Category.Museum) -> {
-                            map.addMarker(
-                                MarkerOptions().position(
-                                    LatLng(
-                                        place.geoPoint.latitude,
-                                        place.geoPoint.longitude
-                                    )
-                                ).title(place.name)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_museum))
+               val marker =
+                   when (place.category) {
+                       (Category.Museum) -> {
+                           map.addMarker(
+                               MarkerOptions().position(
+                                   LatLng(
+                                       place.geoPoint.latitude,
+                                       place.geoPoint.longitude
+                                   )
+                               ).title(place.name)
+                                   .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_museum))
                             )
                         }
                         (Category.Castle) -> {

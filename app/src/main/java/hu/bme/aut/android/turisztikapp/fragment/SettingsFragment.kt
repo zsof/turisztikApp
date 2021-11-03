@@ -3,12 +3,11 @@ package hu.bme.aut.android.turisztikapp.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -29,10 +28,9 @@ import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.tasks.OnFailureListener
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.*
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentSettingsBinding
@@ -42,13 +40,11 @@ import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
 
-
 class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         const val REQUEST_CODE_CAMERA = 100
         const val REQUEST_CODE_GALLERY = 101
-
     }
 
     private val defaultImage = R.drawable.ic_profile
@@ -57,9 +53,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
-    private var reAuthSucces: Boolean = false
+    private var reAuthSuccess: Boolean = false
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
-    private var inputDialogText: String = ""
 
 
     override fun onCreateView(
@@ -90,6 +85,12 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
             binding.profileName.text = it.displayName?.capitalize()
             binding.profileEmail.text = it.email
+            Glide.with(this)
+                .load(it.photoUrl)
+                .into(
+                    binding.profileImage
+                )
+
 
 
             if (it.isEmailVerified) {
@@ -122,7 +123,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
         binding.profileEmailChangeIcon.setOnClickListener {
 
-            if (reAuthSucces)
+            if (reAuthSuccess)
                 showEmailChangeDialog()
             else {
                 binding.etReAuth.visibility = View.VISIBLE
@@ -132,7 +133,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
 
         binding.profilePasswordChangeIcon.setOnClickListener {
-            if (reAuthSucces)
+            if (reAuthSuccess)
                 showPasswordChangeDialog()
             else {
                 binding.etReAuth.visibility = View.VISIBLE
@@ -153,27 +154,27 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                         binding.btnAuth.visibility = View.INVISIBLE
                         binding.til.visibility = View.INVISIBLE
 
-                        reAuthSucces = true
+                        reAuthSuccess = true
                         binding.profileAuthCheckbox.isChecked = true
                     }
                     .addOnFailureListener {
                         toast(it.localizedMessage)
 
-                        reAuthSucces = false
+                        reAuthSuccess = false
                     }
             }
         }
 
         binding.btnSave.setOnClickListener {
+            toast("save----------" + newImageUri.toString())
             val updates = UserProfileChangeRequest.Builder()
-            updates.displayName = inputDialogText
+            if (!binding.profileName.text.isNullOrEmpty())
+                updates.displayName = binding.profileName.text.toString()
             if (newImageUri != null)
                 updates.photoUri = newImageUri
-
             currentUser?.updateProfile(updates.build())
                 ?.addOnSuccessListener {
                     toast("Profil sikeresen frissítve")
-
                 }
                 ?.addOnFailureListener {
                     toast(it.localizedMessage)
@@ -188,23 +189,25 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     }
 
     private fun showImageDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Válaszd ki, honnan töltöd fel!",
+        title: String = "Válaszd ki, honnan töltöd fel!",
     ) {
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setCancelable(false)
             .setPositiveButton("Galéria") { dialog, id ->
                 handleGalleryPermission()
+                dialog.dismiss()
             }
-            .setNegativeButton("Kamera") { dialog, id -> makePhotoClick() }
-
+            .setNegativeButton("Kamera") { dialog, id ->
+                makePhotoClick()
+                dialog.dismiss()
+            }
             .create()
         alertDialog.show()
     }
 
     private fun showNameChangeDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String?,
+        title: String?,
         onNegativeButton: () -> Unit = this::onDestroy,
         inputTextHint: String?,
         inputTextType: Int
@@ -216,13 +219,11 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setCancelable(false)
             .setPositiveButton("Ok") { dialog, id ->
                 dialog.cancel()
-                if (inputText.text.isNotEmpty()) {
+                if (!inputText.text.isNullOrEmpty()) {
                     binding.profileName.text = inputText.text.toString()
                 }
-                inputDialogText = inputText.text.toString()
             }
             .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
             .setView(inputText)
@@ -231,7 +232,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     }
 
     private fun showEmailChangeDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Email-cím változtatás",
+        title: String = "Email-cím változtatás",
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
         val inputText = EditText(context)
@@ -259,7 +260,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     }
 
     private fun showPasswordChangeDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Jelszó változtatás",
+        title: String = "Jelszó változtatás",
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
         val inputText = EditText(context)
@@ -359,7 +360,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 newImageRef.downloadUrl
             }
             .addOnSuccessListener {
-                toast("Lefutottsucecs")
                 newImageUri = it
                 binding.btnSave.isEnabled = true
             }
@@ -379,7 +379,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
     override fun onResume() {
         super.onResume()
-        reAuthSucces = false
+        reAuthSuccess = false
         binding.etReAuth.text.clear()
         binding.profileAuthCheckbox.isChecked = false
     }
@@ -458,4 +458,3 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 }
-

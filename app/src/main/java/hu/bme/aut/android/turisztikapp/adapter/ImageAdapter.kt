@@ -13,7 +13,7 @@ import hu.bme.aut.android.turisztikapp.data.Image
 import hu.bme.aut.android.turisztikapp.databinding.RowImageBinding
 
 class ImageAdapter(private val id: String) :
-    ListAdapter<Image, ImageAdapter.ViewHolder>(itemCallback) {
+    ListAdapter<Image, ImageAdapter.ViewHolder>(ItemCallback) {
 
     private val imageList: MutableList<Image> = mutableListOf()
 
@@ -62,9 +62,8 @@ class ImageAdapter(private val id: String) :
         submitList(imageList)
     }
 
-
     companion object {
-        object itemCallback : DiffUtil.ItemCallback<Image>() {
+        object ItemCallback : DiffUtil.ItemCallback<Image>() {
             override fun areItemsTheSame(oldItem: Image, newItem: Image): Boolean {
                 return oldItem.id == newItem.id
             }
