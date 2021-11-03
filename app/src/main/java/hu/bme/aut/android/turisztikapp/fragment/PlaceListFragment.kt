@@ -44,7 +44,7 @@ class PlaceListFragment : BaseFragment(),
         binding.placeList.layoutManager = LinearLayoutManager(context)
         binding.placeList.adapter = placeListAdapter
 
-        val dividerItemDecoration = DividerItemDecoration(  //recyclerview row-ok közötti elválasztó
+        val dividerItemDecoration = DividerItemDecoration(
             binding.placeList.context,
             (binding.placeList.layoutManager as LinearLayoutManager).orientation
         )
@@ -65,8 +65,8 @@ class PlaceListFragment : BaseFragment(),
             when (it.itemId) {
                 R.id.search -> {
                     val searchView = it.actionView as SearchView
-                    it.expandActionView() //egész kattintható
-                    searchView.queryHint = "Keresés"
+                    it.expandActionView()
+                    searchView.queryHint = getString(R.string.search)
                     searchView.isIconified = false
 
                     searchView.setOnQueryTextListener(
@@ -81,7 +81,6 @@ class PlaceListFragment : BaseFragment(),
                             }
                         }
                     )
-                    true
                 }
             }
             true
@@ -101,11 +100,10 @@ class PlaceListFragment : BaseFragment(),
                 for (dc in snapshots!!.documentChanges) {
 
                     when (dc.type) {
-                        DocumentChange.Type.ADDED -> placeListAdapter.addPlace(dc.document.toObject<Place>())
+                        DocumentChange.Type.ADDED -> placeListAdapter.addPlace(dc.document.toObject())
                         DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
                         DocumentChange.Type.REMOVED -> placeListAdapter.removePlace(dc.document.toObject())
                     }
-
                 }
             }
     }
@@ -135,7 +133,6 @@ class PlaceListFragment : BaseFragment(),
                     null
                 )
         }
-
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }

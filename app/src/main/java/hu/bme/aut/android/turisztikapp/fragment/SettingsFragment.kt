@@ -1,13 +1,11 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,7 +17,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -47,7 +44,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         const val REQUEST_CODE_GALLERY = 101
     }
 
-    private val defaultImage = R.drawable.ic_profile
     private var newImageUri: Uri? = null
     private lateinit var binding: FragmentSettingsBinding
     private val currentUser = FirebaseAuth.getInstance().currentUser
@@ -82,7 +78,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         binding = FragmentSettingsBinding.bind(view)
 
         currentUser?.let {
-
             binding.profileName.text = it.displayName?.capitalize()
             binding.profileEmail.text = it.email
             Glide.with(this)
@@ -90,39 +85,33 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 .into(
                     binding.profileImage
                 )
-
-
-
             if (it.isEmailVerified) {
                 binding.emailVerify.visibility = View.INVISIBLE
             } else {
                 binding.emailVerify.visibility = View.VISIBLE
-
             }
-
         }
-
 
         binding.emailVerify.setOnClickListener {
             currentUser?.sendEmailVerification()
                 ?.addOnCompleteListener {
                     if (it.isSuccessful) {
-                        toast("Megerősítő email elküldve!")
-                        binding.emailVerify.text = "Megerősítő email elküldve"
+                        toast(getString(R.string.verify_email_settings))
+                        binding.emailVerify.text =
+                            getString(R.string.verify_email_textview_settings)
                     } else toast(it.exception?.localizedMessage)
                 }
         }
 
         binding.profileNameChangeIcon.setOnClickListener {
             showNameChangeDialog(
-                title = "Becenév",
-                inputTextHint = "Név",
+                title = getString(R.string.name_settings),
+                inputTextHint = getString(R.string.name_hint_settings),
                 inputTextType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
-
-                )
+            )
         }
-        binding.profileEmailChangeIcon.setOnClickListener {
 
+        binding.profileEmailChangeIcon.setOnClickListener {
             if (reAuthSuccess)
                 showEmailChangeDialog()
             else {
@@ -149,7 +138,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
                 it.reauthenticate(credential)
                     .addOnSuccessListener {
-                        toast("Sikeres authentikáció!")
+                        toast(getString(R.string.authentication_successful_settings))
                         binding.etReAuth.visibility = View.INVISIBLE
                         binding.btnAuth.visibility = View.INVISIBLE
                         binding.til.visibility = View.INVISIBLE
@@ -157,8 +146,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                         reAuthSuccess = true
                         binding.profileAuthCheckbox.isChecked = true
                     }
-                    .addOnFailureListener {
-                        toast(it.localizedMessage)
+                    .addOnFailureListener { e ->
+                        toast(e.localizedMessage)
 
                         reAuthSuccess = false
                     }
@@ -166,7 +155,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
 
         binding.btnSave.setOnClickListener {
-            toast("save----------" + newImageUri.toString())
             val updates = UserProfileChangeRequest.Builder()
             if (!binding.profileName.text.isNullOrEmpty())
                 updates.displayName = binding.profileName.text.toString()
@@ -174,31 +162,30 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 updates.photoUri = newImageUri
             currentUser?.updateProfile(updates.build())
                 ?.addOnSuccessListener {
-                    toast("Profil sikeresen frissítve")
+                    toast(getString(R.string.update_profile_settings))
                 }
-                ?.addOnFailureListener {
-                    toast(it.localizedMessage)
+                ?.addOnFailureListener { e ->
+                    toast(e.localizedMessage)
                 }
         }
 
         binding.profileImage.setOnClickListener {
             showImageDialog()
-            //makePhotoClick()
         }
         setToolbar()
     }
 
     private fun showImageDialog(
-        title: String = "Válaszd ki, honnan töltöd fel!",
+        title: String = getString(R.string.choose_image),
     ) {
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setPositiveButton("Galéria") { dialog, id ->
+            .setPositiveButton(getString(R.string.gallery)) { dialog, _ ->
                 handleGalleryPermission()
                 dialog.dismiss()
             }
-            .setNegativeButton("Kamera") { dialog, id ->
+            .setNegativeButton(getString(R.string.camera)) { dialog, _ ->
                 makePhotoClick()
                 dialog.dismiss()
             }
@@ -219,68 +206,66 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setPositiveButton("Ok") { dialog, id ->
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.cancel()
                 if (!inputText.text.isNullOrEmpty()) {
                     binding.profileName.text = inputText.text.toString()
                 }
             }
-            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
             .create()
         alertDialog.show()
     }
 
     private fun showEmailChangeDialog(
-        title: String = "Email-cím változtatás",
+        title: String = getString(R.string.change_email_settings),
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
         val inputText = EditText(context)
-        inputText.hint = "Új Email-cím"
+        inputText.hint = getString(R.string.new_email_hint_settings)
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setCancelable(false)
-            .setPositiveButton("Ok") { dialog, id ->
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.cancel()
                 if (inputText.text.isNotEmpty())
                     currentUser?.updateEmail(inputText.text.toString())
                         ?.addOnSuccessListener {
                             binding.profileEmail.text = inputText.text.toString()
-                            toast("Email-cím sikeresen frisstíve!")
+                            toast(getString(R.string.email_successful_refresh_settings))
                         }
                         ?.addOnFailureListener {
                             toast(it.localizedMessage)
                         }
             }
-            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
             .create()
         alertDialog.show()
     }
 
     private fun showPasswordChangeDialog(
-        title: String = "Jelszó változtatás",
+        title: String = getString(R.string.change_password),
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
         val inputText = EditText(context)
-        inputText.hint = "Új jelszó"
+        inputText.hint = getString(R.string.new_password_hint)
 
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setCancelable(false)
-            .setPositiveButton("Ok") { dialog, id ->
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.cancel()
                 if (inputText.text.isNotEmpty())
                     currentUser?.updatePassword(inputText.text.toString())
                         ?.addOnSuccessListener {
-                            toast("Jelszó sikeresen frisstíve!")
+                            toast(getString(R.string.password_update_settings))
                         }
                         ?.addOnFailureListener {
                             toast(it.localizedMessage)
                         }
             }
-            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
             .create()
         alertDialog.show()
@@ -331,10 +316,10 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 uploadProfileImage(selectedImage)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
-                toast("Valami hiba történt!")
+                toast(getString(R.string.wrong_message_settings))
             }
         } else {
-            toast("Nem választottál fotót!")
+            toast(getString(R.string.havent_picked_photo_add_new))
         }
     }
 
@@ -373,7 +358,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         binding.toolbar.setNavigationOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
-        //  binding.navView.setNavigationItemSelectedListener(this)
+        binding.navView.setNavigationItemSelectedListener(this)
     }
 
 
@@ -383,7 +368,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         binding.etReAuth.text.clear()
         binding.profileAuthCheckbox.isChecked = false
     }
-
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -405,7 +389,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                     null
                 )
         }
-
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -417,7 +400,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
                     activity as AppCompatActivity,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 )
@@ -426,7 +409,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                     explanation = R.string.contacts_permission_explanation,
                     onPositiveButton = this::requestExternalStoragePermission
                 )
-
             } else {
                 requestExternalStoragePermission()
             }
@@ -436,8 +418,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
-        @StringRes explanation: Int,
+        title: String = getString(R.string.attention),
+        explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
@@ -445,16 +427,16 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             .setTitle(title)
             .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton(R.string.ok_permisson_dialog) { dialog, id ->
+            .setPositiveButton(R.string.ok_permisson_dialog_map) { dialog, _ ->
                 dialog.cancel()
                 onPositiveButton()
             }
-            .setNegativeButton(R.string.exit_permission_diaog) { dialog, id -> onNegativeButton() }
+            .setNegativeButton(R.string.exit_permission_diaog_map) { _, _ -> onNegativeButton() }
             .create()
         alertDialog.show()
     }
 
-    private fun requestExternalStoragePermission() {  //jogosultság elkérése
+    private fun requestExternalStoragePermission() {
         galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 }

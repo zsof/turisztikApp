@@ -19,11 +19,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-
-
     }
 
-    override fun onBackPressed() {  //visszagomb
+    override fun onBackPressed() {
         val f = currentFragment
         if (f !is BaseFragment || f.onBackPressed()) {
             if (!findNavController(R.id.nav_host_fragment).navigateUp()) {
@@ -32,6 +30,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val currentFragment: Fragment? //visszagomb
+    private val currentFragment: Fragment?
         get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host_fragment)
 }

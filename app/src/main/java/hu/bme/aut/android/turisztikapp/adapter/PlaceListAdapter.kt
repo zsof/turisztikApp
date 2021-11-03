@@ -21,7 +21,7 @@ import hu.bme.aut.android.turisztikapp.databinding.RowPlacesBinding
 import hu.bme.aut.android.turisztikapp.fragment.PlaceListFragmentDirections
 
 class PlaceListAdapter :
-    ListAdapter<Place, PlaceListAdapter.PlaceViewHolder>(itemCallback), Filterable {
+    ListAdapter<Place, PlaceListAdapter.PlaceViewHolder>(ItemCallback), Filterable {
 
     private val placeList: MutableList<Place> = mutableListOf()
     private var filterList: MutableList<Place> = placeList
@@ -33,7 +33,6 @@ class PlaceListAdapter :
         val imagePlaceCategory: ImageView = binding.rowPlaceCategory
         val ratePlace: TextView = binding.rowPlaceRate
         var placeItem: Place? = null
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
@@ -79,7 +78,6 @@ class PlaceListAdapter :
         Category.Church -> R.drawable.ic_church
         Category.Zoo -> R.drawable.ic_zoo
         Category.Castle -> R.drawable.ic_castle
-
         else -> null
     }
 
@@ -95,11 +93,9 @@ class PlaceListAdapter :
         placeList -= (place)
         placeList.sortBy { it.name }
         submitList(placeList)
-
     }
 
     override fun getFilter(): Filter {
-
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence?): FilterResults {
                 val searchString = charSequence.toString()
@@ -116,26 +112,24 @@ class PlaceListAdapter :
                     }
                     filterList = tempList
                 }
-
                 val filterResults = FilterResults()
                 filterResults.values = filterList
 
                 return filterResults
-
             }
 
             override fun publishResults(
                 charSequence: CharSequence?,
                 filterResults: FilterResults?
             ) {
-                val ujlista = filterResults?.values as MutableList<Place>
-                submitList(ujlista)
+                val newList = filterResults?.values as MutableList<Place>
+                submitList(newList)
             }
         }
     }
 
     companion object {
-        object itemCallback : DiffUtil.ItemCallback<Place>() {
+        object ItemCallback : DiffUtil.ItemCallback<Place>() {
             override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
                 return oldItem.id == newItem.id
             }

@@ -1,21 +1,12 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import hu.bme.aut.android.turisztikapp.R
@@ -27,7 +18,6 @@ class LoginFragment : BaseFragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var binding: FragmentLoginBinding
-    private var logged: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,24 +34,17 @@ class LoginFragment : BaseFragment() {
         binding.btnRegister.setOnClickListener { registerClick() }
         binding.btnLogin.setOnClickListener { loginClick() }
 
-        println(firebaseAuth.currentUser?.email)
-        println(userEmail)
-
-        // save(binding.checkLog.isChecked, "LoggedIn")
-
         binding.resetPassword.setOnClickListener {
             val email = binding.etEmail.text
             if (email.isEmpty()) {
-                binding.etEmail.error = "Nincs megadva Email-cím"
+                binding.etEmail.error = getString(R.string.empty_email_login)
                 return@setOnClickListener
             } else {
                 showRationaleDialog(
-                    explanation = "Ha elfelejtette jelszavát, nyomjon a Küldés gombra. " +
-                            "Az emailben kapott linken keresztül meg tudja változtatni jelszavát!",
+                    explanation = getString(R.string.forgot_password_login),
                     onPositiveButton = this::onClickOkButton
                 )
             }
-
         }
 
         if (userEmail != null) {
@@ -70,23 +53,21 @@ class LoginFragment : BaseFragment() {
                 null
             )
         } else return
-
     }
 
     private fun onClickOkButton() {
         firebaseAuth.sendPasswordResetEmail(binding.etEmail.text.toString().trim())
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    toast("Email elküldve")
+                    toast(getString(R.string.sent_email_login))
                 } else
-                //toast(it.exception?.message)
-                    toast("Sikertelen küldés")
+                    toast(getString(R.string.failed_sent_email_login))
             }
 
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Új jelszó küldése",
+        title: String = getString(R.string.new_password_sentding_login),
         explanation: String?,
         onNegativeButton: () -> Unit = this::onDestroy,
         onPositiveButton: () -> Unit
@@ -97,28 +78,14 @@ class LoginFragment : BaseFragment() {
             .setTitle(title)
             .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton("Küldés") { dialog, id ->
+            .setPositiveButton(getString(R.string.send_login)) { dialog, _ ->
                 dialog.cancel()
                 onPositiveButton()
             }
-            .setNegativeButton("Mégse") { dialog, id -> onNegativeButton() }
+            .setNegativeButton(getString(R.string.cancel_login)) { _, _ -> onNegativeButton() }
             .create()
 
         alertDialog.show()
-    }
-
-    private fun save(isChecked: Boolean, key: String) {
-        val sharedPreferences: SharedPreferences =
-            (activity as AppCompatActivity).getPreferences(Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(key, isChecked)
-        editor.apply()
-    }
-
-    private fun load(key: String): Boolean {
-        val sharedPreferences: SharedPreferences =
-            (activity as AppCompatActivity).getPreferences(Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean(key, false)
     }
 
     private fun validateForm() =
@@ -139,14 +106,13 @@ class LoginFragment : BaseFragment() {
             )
             .addOnSuccessListener {
                 hideProgressDialog()
-
                 val firebaseUser = it.user
                 val profileChangeRequest = UserProfileChangeRequest.Builder()
                     .setDisplayName(firebaseUser?.email?.substringBefore('@'))
                     .build()
                 firebaseUser?.updateProfile(profileChangeRequest)
 
-                toast("Regisztráció sikeres")
+                toast(getString(R.string.registration_successful_login))
                 findNavController().navigate(
                     R.id.action_login_to_map,
                     null
@@ -173,7 +139,7 @@ class LoginFragment : BaseFragment() {
             .addOnSuccessListener {
                 hideProgressDialog()
 
-                toast("Login is successful")
+                toast(getString(R.string.login_successful_login))
 
                 findNavController().navigate(
                     R.id.action_login_to_map,
@@ -185,14 +151,10 @@ class LoginFragment : BaseFragment() {
                         }
                     }
                 )
-
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener {
                 hideProgressDialog()
-
-                toast("Login is not successful")
+                toast(getString(R.string.login_not_successful_login))
             }
     }
-
 }
-

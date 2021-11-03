@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,7 +19,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -61,7 +59,6 @@ class MapFragment : BaseFragment(),
             val action =
                 MapFragmentDirections.actionMapToAddNewPlace(latLng = it)
             findNavController().navigate(action)
-
         }
 
         googleMap.setOnInfoWindowClickListener {
@@ -125,23 +122,22 @@ class MapFragment : BaseFragment(),
 
     private fun getPlaces() {
         if (!::map.isInitialized) return
-        var museum = null
         Firebase.firestore.collection("places").get().addOnSuccessListener {
             for (dc in it.documents) {
                 val place = dc.toObject<Place>()
                 place ?: continue
 
-               val marker =
-                   when (place.category) {
-                       (Category.Museum) -> {
-                           map.addMarker(
-                               MarkerOptions().position(
-                                   LatLng(
-                                       place.geoPoint.latitude,
-                                       place.geoPoint.longitude
-                                   )
-                               ).title(place.name)
-                                   .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_museum))
+                val marker =
+                    when (place.category) {
+                        (Category.Museum) -> {
+                            map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        place.geoPoint.latitude,
+                                        place.geoPoint.longitude
+                                    )
+                                ).title(place.name)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_museum))
                             )
                         }
                         (Category.Castle) -> {
@@ -215,6 +211,7 @@ class MapFragment : BaseFragment(),
         }
     }
 
+
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (!::map.isInitialized) return
@@ -224,49 +221,48 @@ class MapFragment : BaseFragment(),
 
     @SuppressLint("MissingPermission")
     private fun handleFineLocationPermission() {
-        if (ContextCompat.checkSelfPermission(      //ha nincs engedély rá
+        if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
                     activity as AppCompatActivity,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
                 showRationaleDialog(
-                    explanation = R.string.explanation_permission_location,  //magyarázat
-                    onPositiveButton = this::requestFineLocationPermission  //ok-ra elkéri a jogosultságot
+                    explanation = R.string.explanation_permission_location,
+                    onPositiveButton = this::requestFineLocationPermission
                 )
             } else {
-                requestFineLocationPermission()  //elkéri a jogosultságot
+                requestFineLocationPermission()
             }
         } else {
-            enableMyLocation()  //megvan a hely
+            enableMyLocation()
         }
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
-        @StringRes explanation: Int,
+        title: String = getString(R.string.attention),
+        explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton(getString(R.string.ok_permisson_dialog)) { dialog, id ->
+            .setPositiveButton(getString(R.string.ok_permisson_dialog_map)) { dialog, _ ->
                 dialog.cancel()
                 onPositiveButton()
             }
-            .setNegativeButton(getString(R.string.exit_permission_diaog)) { dialog, id -> onNegativeButton() }
+            .setNegativeButton(getString(R.string.exit_permission_diaog_map)) { _, _ -> onNegativeButton() }
             .create()
         alertDialog.show()
     }
 
-    private fun requestFineLocationPermission() {  //jogosultság elkérése
+    private fun requestFineLocationPermission() {
         locationPermRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 }

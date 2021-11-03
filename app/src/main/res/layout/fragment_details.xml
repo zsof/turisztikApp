@@ -32,8 +32,8 @@
 
             android:maxHeight="200dp"
             android:orientation="horizontal"
-            android:scrollbars="horizontal"
             android:scrollbarStyle="insideOverlay"
+            android:scrollbars="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -45,23 +45,12 @@
             android:id="@+id/fabUploadImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="-16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:src="@drawable/ic_add_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler" />
-
-        <!--  <ImageView
-              android:id="@+id/detailsImage"
-              android:layout_width="0dp"
-              android:layout_height="0dp"
-              android:layout_marginTop="8dp"
-              android:src="@drawable/kep"
-              app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toBottomOf="@id/toolbar" />-->
 
         <TextView
             android:id="@+id/nameDetailsText"
@@ -73,7 +62,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageDetailsRecycler"
             tools:text="Nemzeti Múzeum" />
-
 
         <ImageView
             android:id="@+id/placeDetailsImageIcon"
@@ -166,7 +154,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/commentDetailsText"
             tools:listitem="@layout/row_comment" />
-
 
         <EditText
             android:id="@+id/commentDetailsEditText"

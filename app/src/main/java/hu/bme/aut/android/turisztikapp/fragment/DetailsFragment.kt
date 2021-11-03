@@ -1,25 +1,20 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -32,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -44,7 +38,6 @@ import hu.bme.aut.android.turisztikapp.data.Comment
 import hu.bme.aut.android.turisztikapp.data.Image
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentDetailsBinding
-
 import hu.bme.aut.android.turisztikapp.extension.hideKeyboard
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.io.ByteArrayOutputStream
@@ -52,24 +45,20 @@ import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
 
-
 class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
+
     private lateinit var binding: FragmentDetailsBinding
     private var place: Place? = null
     private lateinit var commentAdapter: CommentAdapter
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
-
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
     private lateinit var startForPhotoResult: ActivityResultLauncher<Intent>
     private lateinit var startForPhotoFromGalleryResult: ActivityResultLauncher<Intent>
 
     companion object {
         const val PLACE = "place"
-        const val REQUEST_CODE_CAMERA = 100
-        const val REQUEST_CODE_GALLERY = 101
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +86,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                         100,
                         false
                     )
-                    toast("Kép megvan")
                     uploadImage(scaledBitmap)
                 }
             }
@@ -116,7 +104,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                         100,
                         false
                     )
-
                     uploadImage(selectedImage)
                 }
             }
@@ -152,28 +139,22 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun displayPlaceData() {
-
-        /* Glide.with(this)
-             .load(place?.image)
-             .transition(DrawableTransitionOptions().crossFade())
-             .into(binding.imageDetailsRecycler)
- */
-
         binding.nameDetailsText.text = place?.name
         binding.addressDetailsText.text = place?.address
-        binding.descDetailsText.text = "Leírás"
+        binding.descDetailsText.text = getString(R.string.descreption_textview_details)
         binding.rateDetailsText.text = place?.rate.toString()
         place?.rate.also {
             if (it != null) {
                 binding.ratingBarDetails.rating = it
             }
         }
+
         binding.commentSendImage.setOnClickListener {
             sendClick()
         }
+
         binding.fabUploadImage.setOnClickListener {
             showImageDialog()
-
         }
 
         binding.descDetailsText.setOnClickListener {
@@ -184,22 +165,20 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun showImageDialog(
-        title: String = "Válaszd ki, honnan töltöd fel a képet!",
+        title: String = getString(R.string.choose_image),
     ) {
-
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
-            .setPositiveButton("Galéria") { dialog, id ->
+            .setPositiveButton(getString(R.string.gallery)) { dialog, _ ->
                 handleGalleryPermission()
                 dialog.dismiss()
             }
-            .setNegativeButton("Kamera") { dialog, id ->
+            .setNegativeButton(getString(R.string.camera)) { dialog, _ ->
                 makePhotoClick()
                 dialog.dismiss()
             }
             .create()
         alertDialog.show()
-
     }
 
     private fun makePhotoClick() {
@@ -211,11 +190,10 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         val galleryImageIntent = Intent(Intent.ACTION_PICK)
         galleryImageIntent.type = "image/*"
         startForPhotoFromGalleryResult.launch(Intent(galleryImageIntent))
-
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = "Leírás",
+        title: String = getString(R.string.descreption_details),
         explanation: String?,
         onPositiveButton: () -> Unit = this::onDestroy
     ) {
@@ -223,7 +201,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             .setTitle(title)
             .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton(getString(R.string.ok_permisson_dialog)) { dialog, id ->
+            .setPositiveButton(getString(R.string.ok_permisson_dialog_map)) { dialog, _ ->
                 dialog.cancel()
                 onPositiveButton()
             }
@@ -268,7 +246,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
     private fun sendClick() {
         if (!validateForm()) {
-            toast("Nincs komment")
+            toast(getString(R.string.empty_comment_details))
             return
         } else {
             uploadComment()
@@ -287,13 +265,12 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
         val storageReference = FirebaseStorage.getInstance().reference
         val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
-
         val newImageRef =
             storageReference.child("images/$newImageName")
 
         newImageRef.putBytes(imageInBytes)
-            .addOnFailureListener { exception ->
-                toast(exception.localizedMessage)
+            .addOnFailureListener { e ->
+                toast(e.localizedMessage)
             }
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -312,13 +289,12 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 db.collection("images")
                     .add(newImage)
                     .addOnSuccessListener {
-                        toast("Image uploaded")
+                        toast(getString(R.string.image_uploaded_details))
                     }
                     .addOnFailureListener { e ->
                         toast(e.localizedMessage)
                     }
             }
-
     }
 
     private fun uploadComment() {
@@ -335,7 +311,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         db.collection("comment")
             .add(newComment)
             .addOnSuccessListener {
-                toast("comment created")
+                toast(getString(R.string.comment_created_details))
             }
             .addOnFailureListener { e -> toast(e.localizedMessage) }
     }
@@ -386,7 +362,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(   //jogosultság kérés magyarázata
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
                     activity as AppCompatActivity,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 )
@@ -395,7 +371,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                     explanation = R.string.contacts_permission_explanation,
                     onPositiveButton = this::requestExternalStoragePermission
                 )
-
             } else {
                 requestExternalStoragePermission()
             }
@@ -405,8 +380,8 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
-        @StringRes explanation: Int,
+        title: String = getString(R.string.attention),
+        explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::onDestroy
     ) {
@@ -414,48 +389,16 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             .setTitle(title)
             .setCancelable(false)
             .setMessage(explanation)
-            .setPositiveButton(R.string.ok_permisson_dialog) { dialog, id ->
+            .setPositiveButton(R.string.ok_permisson_dialog_map) { dialog, _ ->
                 dialog.cancel()
                 onPositiveButton()
             }
-            .setNegativeButton(R.string.exit_permission_diaog) { dialog, id -> onNegativeButton() }
+            .setNegativeButton(R.string.exit_permission_diaog_map) { _, _ -> onNegativeButton() }
             .create()
         alertDialog.show()
     }
 
-    private fun requestExternalStoragePermission() {  //jogosultság elkérése
+    private fun requestExternalStoragePermission() {
         galleryPermRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 }
-/*  private fun showDialog() {  //ratinbar alertdialog
-          val popDialog = AlertDialog.Builder(requireContext())
-          val linearLayout = LinearLayout(context)
-          val rating = RatingBar(context)
-          val lp = LinearLayout.LayoutParams(
-              LinearLayout.LayoutParams.WRAP_CONTENT,
-              LinearLayout.LayoutParams.WRAP_CONTENT
-          )
-          rating.layoutParams = lp
-          rating.numStars = 5
-          rating.stepSize = 1f
-
-          //add ratingBar to linearLayout
-          linearLayout.addView(rating)
-          popDialog.setIcon(android.R.drawable.btn_star_big_on)
-          popDialog.setTitle("Értékelés: ")
-
-          //add linearLayout to dailog
-          popDialog.setView(linearLayout)
-          rating.onRatingBarChangeListener =
-              OnRatingBarChangeListener { ratingBar, v, b -> rateSum += v }
-
-          // Button OK
-          popDialog.setPositiveButton(android.R.string.ok) { dialoginterface, i ->
-              binding.rateDetailsText.text = rateSum.toString()
-              binding.rateDetailsText.text = rating.progress.toString()
-
-          }
-              .setNegativeButton("Cancel", null)
-          popDialog.create()
-          popDialog.show()
-      }*/

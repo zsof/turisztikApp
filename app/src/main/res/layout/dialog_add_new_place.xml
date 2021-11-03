@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:padding="16dp"
-    android:scrollbars="vertical"
-    android:scrollbarStyle="insideOverlay">
+    android:scrollbarStyle="insideOverlay"
+    android:scrollbars="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,13 +63,13 @@
 
         <RatingBar
             android:id="@+id/placeRatingBar"
+            style="?android:attr/ratingBarStyleIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleIndicator"
+            android:isIndicator="false"
             android:numStars="5"
-            android:stepSize="1"
             android:rating="0"
-            android:isIndicator="false" />
+            android:stepSize="1" />
 
         <LinearLayout
             android:layout_width="wrap_content"

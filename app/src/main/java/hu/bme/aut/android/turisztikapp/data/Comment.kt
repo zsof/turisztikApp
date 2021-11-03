@@ -8,5 +8,4 @@ data class Comment(
     var userId: String? = null,
     var userName: String? = "",
     val comment: String = "",
-    //  val rate: Float? = 2F
 ) : Serializable
