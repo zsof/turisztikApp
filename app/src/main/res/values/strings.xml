@@ -70,7 +70,7 @@
     <string name="camera">Kamera</string>
     <string name="descreption_details">Leírás</string>
     <string name="empty_comment_details">Nincs komment</string>
-    <string name="image_uploaded_details">Kép feltöltve</string>
+    <string name="image_uploaded_details">Kép feltöltve, lehet frissítened kell az oldalt!</string>
     <string name="comment_created_details">Komment hozzáadva</string>
     <string name="descreption_textview_details">Leírás</string>
     <string name="empty_email_login">Nincs megadva Email-cím</string>
@@ -81,7 +81,7 @@
     <string name="send_login">Küldés</string>
     <string name="cancel_login">Mégse</string>
     <string name="registration_successful_login">Regisztráció sikeres</string>
-    <string name="login_successful_login">Login is successful</string>
+    <string name="login_successful_login">Bejelentkezés sikeres</string>
     <string name="login_not_successful_login">Login is not successful</string>
     <string name="search">Keresés</string>
     <string name="verify_email_textview_settings">Megerősítő email elküldve</string>
@@ -97,4 +97,7 @@
     <string name="new_password_hint">Új jelszó</string>
     <string name="password_update_settings">Jelszó sikeresen frisstíve!</string>
     <string name="wrong_message_settings">Valami hiba történt!</string>
+    <string name="login">Bejelentkezés</string>
+    <string name="register">Regisztráció</string>
+    <string name="required">Kötelező</string>
 </resources>

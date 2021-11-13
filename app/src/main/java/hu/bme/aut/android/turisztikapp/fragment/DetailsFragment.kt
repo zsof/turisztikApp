@@ -17,14 +17,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
@@ -105,6 +108,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                         false
                     )
                     uploadImage(selectedImage)
+
                 }
             }
     }
@@ -132,6 +136,18 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         imageAdapter = ImageAdapter(place!!.id)
         binding.imageDetailsRecycler.adapter = imageAdapter
+
+        binding.toolbar.inflateMenu(R.menu.refresh_menu)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.refresh -> {
+                    val actionToDetails =
+                        DetailsFragmentDirections.actonDetailsToDetails(place = place!!)
+                    findNavController().navigate(actionToDetails)
+                }
+            }
+            true
+        }
 
         setToolbar()
         displayPlaceData()
@@ -282,7 +298,8 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 val newImage = Image(
                     id = UUID.randomUUID().toString(),
                     image = it.toString(),
-                    placeId = place?.id.toString()
+                    placeId = place?.id.toString(),
+                    date = Calendar.getInstance().time
                 )
 
                 val db = Firebase.firestore
@@ -304,7 +321,9 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             userName = userName,
             placeId = place?.id.toString(),
             comment = binding.commentDetailsEditText.text.toString()
-                .replaceFirstChar { it.uppercase() }
+                .replaceFirstChar { it.uppercase() },
+            date = Calendar.getInstance().time
+
         )
         val db = Firebase.firestore
 

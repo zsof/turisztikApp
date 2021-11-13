@@ -42,6 +42,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     companion object {
         const val REQUEST_CODE_CAMERA = 100
         const val REQUEST_CODE_GALLERY = 101
+
     }
 
     private var newImageUri: Uri? = null
@@ -78,10 +79,12 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         binding = FragmentSettingsBinding.bind(view)
 
         currentUser?.let {
+
             binding.profileName.text = it.displayName?.capitalize()
             binding.profileEmail.text = it.email
             Glide.with(this)
                 .load(it.photoUrl)
+                .placeholder(R.drawable.ic_profile)
                 .into(
                     binding.profileImage
                 )
@@ -235,8 +238,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                             binding.profileEmail.text = inputText.text.toString()
                             toast(getString(R.string.email_successful_refresh_settings))
                         }
-                        ?.addOnFailureListener {
-                            toast(it.localizedMessage)
+                        ?.addOnFailureListener { e ->
+                            toast(e.localizedMessage)
                         }
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
@@ -261,8 +264,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                         ?.addOnSuccessListener {
                             toast(getString(R.string.password_update_settings))
                         }
-                        ?.addOnFailureListener {
-                            toast(it.localizedMessage)
+                        ?.addOnFailureListener { e ->
+                            toast(e.localizedMessage)
                         }
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
@@ -335,8 +338,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             storageReference.child("images/$newImageName")
 
         newImageRef.putBytes(imageInBytes)
-            .addOnFailureListener { exception ->
-                toast(exception.localizedMessage)
+            .addOnFailureListener { e ->
+                toast(e.localizedMessage)
             }
             .continueWithTask { task ->
                 if (!task.isSuccessful) {

@@ -29,6 +29,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="16dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
             android:layout_marginStart="4dp"
             android:src="@drawable/ic_profile"
             app:layout_constraintStart_toStartOf="parent"

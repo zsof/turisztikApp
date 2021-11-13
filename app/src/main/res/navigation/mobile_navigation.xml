@@ -95,6 +95,11 @@
             android:id="@+id/action_details_to_settings"
             app:destination="@+id/nav_settings_fragment" />
         <action
+            android:id="@+id/acton_details_to_details"
+            app:destination="@id/nav_details_fragment"
+            app:popUpTo="@id/nav_details_fragment"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_details_to_logout"
             app:destination="@+id/nav_login_fragment" />
         <action

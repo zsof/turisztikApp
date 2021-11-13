@@ -43,7 +43,7 @@ class CommentAdapter(private val id: String) :
         comment ?: return
         if (id == comment.placeId) {
             commentList += (comment)
-            commentList.sortBy { it.comment }
+            commentList.sortBy { it.date }
             submitList(commentList)
         }
     }

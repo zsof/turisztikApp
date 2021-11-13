@@ -336,7 +336,8 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                     Image(
                         id = UUID.randomUUID().toString(),
                         image = downloadUri.toString(),
-                        placeId = it.id
+                        placeId = it.id,
+                        date = Calendar.getInstance().time
                     )
                 }
                 val db = Firebase.firestore

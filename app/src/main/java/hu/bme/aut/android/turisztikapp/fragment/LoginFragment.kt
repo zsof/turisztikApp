@@ -118,9 +118,9 @@ class LoginFragment : BaseFragment() {
                     null
                 )
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener { e ->
                 hideProgressDialog()
-                toast(exception.message)
+                toast(e.localizedMessage)
             }
     }
 
@@ -138,7 +138,6 @@ class LoginFragment : BaseFragment() {
             )
             .addOnSuccessListener {
                 hideProgressDialog()
-
                 toast(getString(R.string.login_successful_login))
 
                 findNavController().navigate(
@@ -152,9 +151,9 @@ class LoginFragment : BaseFragment() {
                     }
                 )
             }
-            .addOnFailureListener {
+            .addOnFailureListener { e ->
                 hideProgressDialog()
-                toast(getString(R.string.login_not_successful_login))
+                toast(e.localizedMessage)
             }
     }
 }

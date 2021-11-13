@@ -47,4 +47,5 @@ open class BaseFragment : Fragment() {
     }
 
     open fun onBackPressed() = true
+
 }

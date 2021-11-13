@@ -6,10 +6,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import hu.bme.aut.android.turisztikapp.R
 
 fun EditText.validateNonEmpty(): Boolean {
     if (text.isEmpty()) {
-        error = "Required"
+        error = context.getString(R.string.required)
         return false
     }
     return true

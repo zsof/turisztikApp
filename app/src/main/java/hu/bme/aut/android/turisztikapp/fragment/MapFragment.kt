@@ -76,7 +76,7 @@ class MapFragment : BaseFragment(),
                     enableMyLocation()
                 } else toast(getString(R.string.permission_denied))
             }
-        handleFineLocationPermission()
+        //handleFineLocationPermission()
     }
 
     override fun onCreateView(
@@ -92,7 +92,7 @@ class MapFragment : BaseFragment(),
         binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-
+        handleFineLocationPermission()
         binding.toolbarMap.inflateMenu(R.menu.menu_map)
         binding.toolbarMap.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -212,14 +212,15 @@ class MapFragment : BaseFragment(),
     }
 
 
+
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
-        if (!::map.isInitialized) return
+        if (!::map.isInitialized)
+            return
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
     }
 
-    @SuppressLint("MissingPermission")
     private fun handleFineLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),

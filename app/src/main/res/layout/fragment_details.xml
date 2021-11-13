@@ -9,7 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@+id/descDetailsImageIcon"
+        app:layout_constraintTop_toTopOf="@+id/descDetailsImageIcon">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -27,12 +29,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/imageDetailsRecycler"
             android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_margin="16dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_max="150dp"
 
-            android:maxHeight="200dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
-            android:scrollbarStyle="insideOverlay"
+            android:scrollbarStyle="outsideInset"
             android:scrollbars="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/nameDetailsText"
@@ -56,6 +58,7 @@
             android:id="@+id/nameDetailsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:textSize="30sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -143,9 +146,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/commentDetailsRecycler"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="0dp"
             android:layout_margin="16dp"
-            android:maxHeight="200dp"
+            app:layout_constraintHeight_max="150dp"
+            app:layout_constraintHeight_min="100dp"
             android:orientation="vertical"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -160,13 +164,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginBottom="16dp"
             android:hint="@string/comment_text"
             android:inputType="textCapSentences"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/commentSendImage"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/commentDetailsRecycler" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/commentSendImage"
@@ -174,12 +176,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/commentDetailsEditText"
-            app:layout_constraintTop_toBottomOf="@id/commentDetailsRecycler" />
+            app:layout_constraintStart_toEndOf="@id/commentDetailsEditText" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

@@ -52,6 +52,7 @@ class ImageAdapter(private val id: String) :
         image ?: return
         if (id == image.placeId) {
             imageList += (image)
+            imageList.sortBy { it.date }
             submitList(imageList)
         }
     }
