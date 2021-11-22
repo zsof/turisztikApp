@@ -142,9 +142,9 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 it.reauthenticate(credential)
                     .addOnSuccessListener {
                         toast(getString(R.string.authentication_successful_settings))
-                        binding.etReAuth.visibility = View.INVISIBLE
-                        binding.btnAuth.visibility = View.INVISIBLE
-                        binding.til.visibility = View.INVISIBLE
+                        binding.etReAuth.visibility = View.GONE
+                        binding.btnAuth.visibility = View.GONE
+                        binding.til.visibility = View.GONE
 
                         reAuthSuccess = true
                         binding.profileAuthCheckbox.isChecked = true

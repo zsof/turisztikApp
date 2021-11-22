@@ -3,6 +3,8 @@ package hu.bme.aut.android.turisztikapp.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +35,7 @@ class MapFragment : BaseFragment(),
     private lateinit var binding: FragmentMapBinding
     private lateinit var map: GoogleMap
     private lateinit var locationPermRequest: ActivityResultLauncher<String>
+    private lateinit var location: Location
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -46,6 +49,7 @@ class MapFragment : BaseFragment(),
          */
 
         map = googleMap
+        handleFineLocationPermission()
         getPlaces()
         val budapest = LatLng(47.497913, 19.040236)
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(budapest))
@@ -61,8 +65,15 @@ class MapFragment : BaseFragment(),
             findNavController().navigate(action)
         }
 
+        googleMap.setOnMarkerClickListener {
+            var itPlace = it.tag as Place
+            var distance = getDistance(itPlace)
+            toast(String.format("%.1f", distance) + " km")
+            false
+        }
+
         googleMap.setOnInfoWindowClickListener {
-            val actionToDetails = MapFragmentDirections.actionMapToDetails(place = it.tag as Place)
+            val actionToDetails = MapFragmentDirections.actionMapToDetails(it.tag as Place)
             findNavController().navigate(actionToDetails)
         }
     }
@@ -76,7 +87,6 @@ class MapFragment : BaseFragment(),
                     enableMyLocation()
                 } else toast(getString(R.string.permission_denied))
             }
-        //handleFineLocationPermission()
     }
 
     override fun onCreateView(
@@ -92,7 +102,6 @@ class MapFragment : BaseFragment(),
         binding = FragmentMapBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        handleFineLocationPermission()
         binding.toolbarMap.inflateMenu(R.menu.menu_map)
         binding.toolbarMap.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -120,12 +129,21 @@ class MapFragment : BaseFragment(),
         }
     }
 
+
     private fun getPlaces() {
-        if (!::map.isInitialized) return
+        if (!::map.isInitialized)
+            return
         Firebase.firestore.collection("places").get().addOnSuccessListener {
             for (dc in it.documents) {
                 val place = dc.toObject<Place>()
                 place ?: continue
+
+                /*location = Location(LocationManager.GPS_PROVIDER)
+                location.latitude=place.geoPoint.latitude
+                location.longitude=place.geoPoint.longitude
+
+                distance.add(location.distanceTo(map.myLocation) / 1000)*/
+
 
                 val marker =
                     when (place.category) {
@@ -207,18 +225,21 @@ class MapFragment : BaseFragment(),
                         }
                     }
                 marker?.tag = place
+
+
             }
         }
     }
 
 
-
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
-        if (!::map.isInitialized)
+        if (!::map.isInitialized) {
             return
+        }
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
+
     }
 
     private fun handleFineLocationPermission() {
@@ -265,5 +286,13 @@ class MapFragment : BaseFragment(),
 
     private fun requestFineLocationPermission() {
         locationPermRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private fun getDistance(place: Place): Float {
+        location = Location(LocationManager.GPS_PROVIDER)
+        location.latitude = place.geoPoint.latitude
+        location.longitude = place.geoPoint.longitude
+
+        return location.distanceTo(map.myLocation) / 1000
     }
 }

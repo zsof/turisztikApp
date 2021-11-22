@@ -70,6 +70,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         arguments?.let {
             place = it.get(PLACE) as Place?
         }
+
         galleryPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 if (it) {
@@ -108,11 +109,9 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                         false
                     )
                     uploadImage(selectedImage)
-
                 }
             }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -227,7 +226,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
     private fun initPostsListener() {
         val db = Firebase.firestore
-        db.collection("comment")
+        db.collection("comments")
             .addSnapshotListener { snapshots, e ->
                 if (e != null) {
                     toast(e.toString())
@@ -327,7 +326,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         )
         val db = Firebase.firestore
 
-        db.collection("comment")
+        db.collection("comments")
             .add(newComment)
             .addOnSuccessListener {
                 toast(getString(R.string.comment_created_details))

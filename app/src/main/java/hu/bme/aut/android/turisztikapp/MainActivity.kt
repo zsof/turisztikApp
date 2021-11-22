@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -31,15 +33,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+
     }
 
-    /*  override fun onResume() {
-          super.onResume()
-          if(!isConnected) {
-              Toast.makeText(this, "Nincs Internet kapcsolat", Toast.LENGTH_LONG).show()
-              finish()
-          }
-      }*/
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!isConnected) {
+            Toast.makeText(
+                this,
+                "Nincs internet kapcsolat, bizonyos funkciók nem működnek!",
+                Toast.LENGTH_LONG
+            ).show()
+
+        }
+    }
+
     override fun onBackPressed() {
         val f = currentFragment
         if (f !is BaseFragment || f.onBackPressed()) {

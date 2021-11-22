@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -37,25 +36,25 @@ import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.DialogAddNewPlaceBinding
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.net.URLEncoder
 import java.util.*
 
-class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
+class AddNewPlaceDialogFragment : DialogFragment() {
 
     companion object {
-        private const val REQUEST_CODE_CAMERA = 101
-        private const val REQUEST_CODE_GALLERY = 10
         const val LATLNG = "latLng"
     }
 
     private lateinit var binding: DialogAddNewPlaceBinding
     private var setGallery: Boolean = false
     private var setCamera: Boolean = false
+    private lateinit var bitmap: Bitmap
     private var latLng: LatLng = LatLng(47.497913, 19.040236)
     private val placeHolder = R.drawable.ic_camera
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
+    private lateinit var startForPhotoResult: ActivityResultLauncher<Intent>
+    private lateinit var startForPhotoFromGalleryResult: ActivityResultLauncher<Intent>
     private var newPlace: Place? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +71,46 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                     openGalleryForImage()
                 } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
                     .show()
+            }
+        startForPhotoResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == RESULT_OK) {
+                    val imageBitmap = it.data?.extras?.get("data") as Bitmap?
+                    imageBitmap ?: return@registerForActivityResult
+                    binding.placeCameraButton.setImageBitmap(
+                        Bitmap.createScaledBitmap(
+                            imageBitmap,
+                            binding.placeCameraButton.width,
+                            binding.placeCameraButton.height,
+                            false
+                        )
+                    )
+                    setCamera = true
+                    setGallery = false
+                    binding.placeGalleryButton.setImageResource(R.drawable.ic_gallery)
+                }
+            }
+        startForPhotoFromGalleryResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == RESULT_OK) {
+                    val imageUri = it.data?.data
+                    imageUri ?: return@registerForActivityResult
+                    val imageStream: InputStream? =
+                        activity?.applicationContext?.contentResolver?.openInputStream(imageUri)
+
+                    val selectedImage = BitmapFactory.decodeStream(imageStream)
+                    binding.placeGalleryButton.setImageBitmap(
+                        Bitmap.createScaledBitmap(
+                            selectedImage,
+                            binding.placeGalleryButton.width,
+                            binding.placeGalleryButton.height,
+                            false
+                        )
+                    )
+                    setGallery = true
+                    setCamera = false
+                    binding.placeCameraButton.setImageResource(R.drawable.ic_camera)
+                }
             }
     }
 
@@ -108,28 +147,15 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
             return
         }
 
-        if (!setCamera && !setGallery
-        ) {
+        if (!setCamera && !setGallery) {
             uploadPlace()
             findNavController().navigate(
                 R.id.ok_dialog_to_list,
                 null
             )
-        } else if (setCamera && !setGallery) {
+        } else {
             try {
                 uploadPlaceWithImage()
-                findNavController().navigate(
-                    R.id.ok_dialog_to_list,
-                    null
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else if (setGallery &&
-            !setCamera
-        ) {
-            try {
-                uploadPlaceWithImageFromGallery()
                 findNavController().navigate(
                     R.id.ok_dialog_to_list,
                     null
@@ -167,17 +193,14 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
         }
 
         val db = Firebase.firestore
-
         db.collection("places")
             .add(newPlace!!)
             .addOnSuccessListener {
-
             }
             .addOnFailureListener { e ->
                 Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
             }
     }
-
 
     private fun getAddress(latLng: LatLng): String {
         val geocoder = Geocoder(context)
@@ -186,88 +209,22 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private fun makePhotoClick() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
+        val imageCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startForPhotoResult.launch(Intent(imageCaptureIntent))
     }
 
     private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_CODE_GALLERY)
-    }
-
-    override fun onActivityResult(reqCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(reqCode, resultCode, data)
-        if (resultCode != RESULT_OK) {
-            return
-        }
-        when (reqCode) {
-            REQUEST_CODE_CAMERA -> {
-                try {
-                    val imageBitmap = data?.extras?.get("data") as Bitmap
-                    binding.placeCameraButton.setImageBitmap(
-                        Bitmap.createScaledBitmap(
-                            imageBitmap,
-                            binding.placeCameraButton.width,
-                            binding.placeCameraButton.height,
-                            false
-                        )
-                    )
-                    setCamera = true
-                    setGallery = false
-                    binding.placeGalleryButton.setImageResource(R.drawable.ic_gallery)
-
-                } catch (e: FileNotFoundException) {
-                    e.printStackTrace()
-                    Toast.makeText(
-                        context,
-                        getString(R.string.failure_massage_new_camera_image),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            REQUEST_CODE_GALLERY -> {
-                try {
-                    val imageUri = data?.data
-                    val imageStream: InputStream? = imageUri?.let {
-                        activity?.applicationContext?.contentResolver?.openInputStream(
-                            it
-                        )
-                    }
-                    val selectedImage = BitmapFactory.decodeStream(imageStream)
-                    binding.placeGalleryButton.setImageBitmap(
-                        Bitmap.createScaledBitmap(
-                            selectedImage,
-                            binding.placeGalleryButton.width,
-                            binding.placeGalleryButton.height,
-                            false
-                        )
-                    )
-                    setGallery = true
-                    setCamera = false
-                    binding.placeCameraButton.setImageResource(R.drawable.ic_camera)
-
-                } catch (e: FileNotFoundException) {
-                    e.printStackTrace()
-                    Toast.makeText(
-                        context,
-                        getString(R.string.failure_massage_new_camera_image),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            else -> {
-                Toast.makeText(
-                    context,
-                    getString(R.string.havent_picked_photo_add_new),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
+        val galleryImageIntent = Intent(Intent.ACTION_PICK)
+        galleryImageIntent.type = "image/*"
+        startForPhotoFromGalleryResult.launch(Intent(galleryImageIntent))
     }
 
     private fun uploadPlaceWithImage() {
-        val bitmap: Bitmap = (binding.placeCameraButton.drawable as BitmapDrawable).bitmap
+        if (setCamera)
+            bitmap = (binding.placeCameraButton.drawable as BitmapDrawable).bitmap
+        else if (setGallery)
+            bitmap = (binding.placeGalleryButton.drawable as BitmapDrawable).bitmap
+
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val imageInBytes = baos.toByteArray()
@@ -297,68 +254,16 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                 }
 
                 val db = Firebase.firestore
-
-                if (newImage != null) {
-                    db.collection("images")
-                        .add(newImage)
-                        .addOnSuccessListener {  //nem jó a toast
-                        }
-                        .addOnFailureListener {
-                        }
-                }
-            }
-    }
-
-    private fun uploadPlaceWithImageFromGallery() {
-        val bitmapGallery: Bitmap =
-            (binding.placeGalleryButton.drawable as BitmapDrawable).bitmap
-        val baos = ByteArrayOutputStream()
-        bitmapGallery.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val imageInBytes = baos.toByteArray()
-
-        val storageReference = FirebaseStorage.getInstance().reference
-        val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
-        val newImageRef = storageReference.child("images/$newImageName")
-
-        newImageRef.putBytes(imageInBytes)
-            .addOnFailureListener { e ->
-                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
-            }
-            .continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let { throw it }
-                }
-                newImageRef.downloadUrl
-            }
-            .addOnSuccessListener { downloadUri ->
-                uploadPlace(downloadUri.toString())
-                val newImage = newPlace?.let {
-                    Image(
-                        id = UUID.randomUUID().toString(),
-                        image = downloadUri.toString(),
-                        placeId = it.id,
-                        date = Calendar.getInstance().time
-                    )
-                }
-                val db = Firebase.firestore
-
                 if (newImage != null) {
                     db.collection("images")
                         .add(newImage)
                         .addOnSuccessListener {
                         }
-                        .addOnFailureListener {
+                        .addOnFailureListener { e ->
+                            Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
                         }
                 }
             }
-    }
-
-    override fun onClick(p0: DialogInterface?, p1: Int) {
-        sendClick()
-        findNavController().navigate(
-            R.id.ok_dialog_to_list,
-            null
-        )
     }
 
     private fun showRationaleDialog(
@@ -395,7 +300,6 @@ class AddNewPlaceDialogFragment : DialogFragment(), DialogInterface.OnClickListe
                     explanation = R.string.contacts_permission_explanation,
                     onPositiveButton = this::requestExternalStoragePermission
                 )
-
             } else {
                 requestExternalStoragePermission()
             }

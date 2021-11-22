@@ -175,7 +175,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/profileAuthCheckbox"
             app:layout_constraintEnd_toStartOf="@id/btnAuth"
             app:layout_constraintStart_toStartOf="parent"
@@ -186,7 +186,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Jelszó szükséges az azonsoításhoz!"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:inputType="textPassword"
                 android:text="" />
 

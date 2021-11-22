@@ -18,7 +18,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.adapter.PlaceListAdapter
-import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
 
 class PlaceListFragment : BaseFragment(),
@@ -82,6 +81,11 @@ class PlaceListFragment : BaseFragment(),
                         }
                     )
                 }
+                R.id.refresh -> {
+                    val actionToList =
+                        PlaceListFragmentDirections.actionPlacelistToPlaceList()
+                    findNavController().navigate(actionToList)
+                }
             }
             true
         }
@@ -96,9 +100,7 @@ class PlaceListFragment : BaseFragment(),
                     toast(e.toString())
                     return@addSnapshotListener
                 }
-
                 for (dc in snapshots!!.documentChanges) {
-
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> placeListAdapter.addPlace(dc.document.toObject())
                         DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO

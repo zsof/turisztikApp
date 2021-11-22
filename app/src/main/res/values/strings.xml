@@ -47,6 +47,7 @@
         <item>Állatkert</item>
         <item>Vár</item>
 
+
     </string-array>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
