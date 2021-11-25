@@ -316,6 +316,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                         false
                     )
                 )
+                binding.btnSave.isEnabled = false
                 uploadProfileImage(selectedImage)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
