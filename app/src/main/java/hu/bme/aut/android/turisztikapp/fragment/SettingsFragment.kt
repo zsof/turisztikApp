@@ -31,6 +31,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentSettingsBinding
+import hu.bme.aut.android.turisztikapp.interactor.FirebaseInteractor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -42,12 +43,12 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     companion object {
         const val REQUEST_CODE_CAMERA = 100
         const val REQUEST_CODE_GALLERY = 101
-
     }
 
     private var newImageUri: Uri? = null
     private lateinit var binding: FragmentSettingsBinding
     private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val firebaseInteractor = FirebaseInteractor()
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
     private var reAuthSuccess: Boolean = false
@@ -96,14 +97,27 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
 
         binding.emailVerify.setOnClickListener {
-            currentUser?.sendEmailVerification()
-                ?.addOnCompleteListener {
-                    if (it.isSuccessful) {
+            firebaseInteractor.sendVerifyEmail()
+            { it, msg ->
+                when (it) {
+                    FirebaseInteractor.SUCCESS -> {
                         toast(getString(R.string.verify_email_settings))
                         binding.emailVerify.text =
                             getString(R.string.verify_email_textview_settings)
-                    } else toast(it.exception?.localizedMessage)
+                    }
+                    FirebaseInteractor.FAILURE -> {
+                        toast(msg)
+                    }
                 }
+            }
+            /* currentUser?.sendEmailVerification()
+                 ?.addOnCompleteListener {
+                     if (it.isSuccessful) {
+                         toast(getString(R.string.verify_email_settings))
+                         binding.emailVerify.text =
+                             getString(R.string.verify_email_textview_settings)
+                     } else toast(it.exception?.localizedMessage)
+                 }*/
         }
 
         binding.profileNameChangeIcon.setOnClickListener {
@@ -135,7 +149,23 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
 
         binding.btnAuth.setOnClickListener {
-            currentUser?.let {
+            firebaseInteractor.reAuth(binding.etReAuth.text.toString()) { it, msg ->
+                when (it) {
+                    FirebaseInteractor.SUCCESS -> {
+                        toast(getString(R.string.authentication_successful_settings))
+                        binding.etReAuth.visibility = View.GONE
+                        binding.btnAuth.visibility = View.GONE
+                        binding.til.visibility = View.GONE
+                        reAuthSuccess = true
+                        binding.profileAuthCheckbox.isChecked = true
+                    }
+                    FirebaseInteractor.FAILURE -> {
+                        toast(msg)
+                        reAuthSuccess = false
+                    }
+                }
+            }
+            /*currentUser?.let {
                 val credential =
                     EmailAuthProvider.getCredential(it.email!!, binding.etReAuth.text.toString())
 
@@ -154,11 +184,24 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
 
                         reAuthSuccess = false
                     }
-            }
+            }*/
         }
 
         binding.btnSave.setOnClickListener {
-            val updates = UserProfileChangeRequest.Builder()
+            firebaseInteractor.saveProfile(
+                binding.profileName.text.toString(),
+                newImageUri
+            ) { it, msg ->
+                when (it) {
+                    FirebaseInteractor.SUCCESS -> {
+                        toast(getString(R.string.update_profile_settings))
+                    }
+                    FirebaseInteractor.FAILURE -> {
+                        toast(msg)
+                    }
+                }
+            }
+            /*val updates = UserProfileChangeRequest.Builder()
             if (!binding.profileName.text.isNullOrEmpty())
                 updates.displayName = binding.profileName.text.toString()
             if (newImageUri != null)
@@ -169,7 +212,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 }
                 ?.addOnFailureListener { e ->
                     toast(e.localizedMessage)
-                }
+                }*/
         }
 
         binding.profileImage.setOnClickListener {
@@ -233,14 +276,28 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.cancel()
                 if (inputText.text.isNotEmpty())
-                    currentUser?.updateEmail(inputText.text.toString())
-                        ?.addOnSuccessListener {
-                            binding.profileEmail.text = inputText.text.toString()
-                            toast(getString(R.string.email_successful_refresh_settings))
+                    firebaseInteractor.updateEmail(
+                        inputText.text.toString()
+                    ) { it, msg ->
+                        when (it) {
+                            FirebaseInteractor.SUCCESS -> {
+                                binding.profileEmail.text = inputText.text.toString()
+                                toast(getString(R.string.email_successful_refresh_settings))
+                            }
+                            FirebaseInteractor.FAILURE -> {
+                                toast(msg)
+                            }
                         }
-                        ?.addOnFailureListener { e ->
-                            toast(e.localizedMessage)
-                        }
+
+                    }
+                /* currentUser?.updateEmail(inputText.text.toString())
+                     ?.addOnSuccessListener {
+                         binding.profileEmail.text = inputText.text.toString()
+                         toast(getString(R.string.email_successful_refresh_settings))
+                     }
+                     ?.addOnFailureListener { e ->
+                         toast(e.localizedMessage)
+                     }*/
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
@@ -260,13 +317,23 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.cancel()
                 if (inputText.text.isNotEmpty())
-                    currentUser?.updatePassword(inputText.text.toString())
-                        ?.addOnSuccessListener {
-                            toast(getString(R.string.password_update_settings))
+                    firebaseInteractor.updatePassword(inputText.text.toString()) { it, msg ->
+                        when (it) {
+                            FirebaseInteractor.SUCCESS -> {
+                                toast(getString(R.string.password_update_settings))
+                            }
+                            FirebaseInteractor.FAILURE -> {
+                                toast(msg)
+                            }
                         }
-                        ?.addOnFailureListener { e ->
-                            toast(e.localizedMessage)
-                        }
+                    }
+                /* currentUser?.updatePassword(inputText.text.toString())
+                     ?.addOnSuccessListener {
+                         toast(getString(R.string.password_update_settings))
+                     }
+                     ?.addOnFailureListener { e ->
+                         toast(e.localizedMessage)
+                     }*/
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)

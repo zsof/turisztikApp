@@ -101,4 +101,5 @@
     <string name="login">Bejelentkezés</string>
     <string name="register">Regisztráció</string>
     <string name="required">Kötelező</string>
+    <string name="reset_email_sent">Email elküdlve</string>
 </resources>

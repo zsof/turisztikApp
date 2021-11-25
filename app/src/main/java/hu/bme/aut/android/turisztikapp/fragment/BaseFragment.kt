@@ -33,7 +33,7 @@ open class BaseFragment : Fragment() {
         }
     }
 
-    protected fun hideProgressDialog() {
+    fun hideProgressDialog() {
         progressDialog?.let { dialog ->
             if (dialog.isShowing) {
                 dialog.dismiss()
@@ -42,10 +42,9 @@ open class BaseFragment : Fragment() {
         progressDialog = null
     }
 
-    protected fun toast(message: String?) {
+    fun toast(message: String?) {
         Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
     }
 
     open fun onBackPressed() = true
-
 }

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
+import hu.bme.aut.android.turisztikapp.interactor.FirebaseInteractor
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentLoginBinding
 import hu.bme.aut.android.turisztikapp.extension.hideKeyboard
@@ -18,6 +18,7 @@ class LoginFragment : BaseFragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var binding: FragmentLoginBinding
+    private var firebaseInteractor = FirebaseInteractor()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +31,7 @@ class LoginFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
+
         binding = FragmentLoginBinding.bind(view)
         binding.btnRegister.setOnClickListener { registerClick() }
         binding.btnLogin.setOnClickListener { loginClick() }
@@ -47,22 +49,40 @@ class LoginFragment : BaseFragment() {
             }
         }
 
-        if (userEmail != null) {
+        /*if (userEmail != null) {
             findNavController().navigate(
                 R.id.action_login_to_map,
                 null
             )
-        } else return
+        } else return*/
+
+        val userLogged: Boolean = firebaseInteractor.userLoggedIn()
+        if (userLogged) {
+            findNavController().navigate(
+                R.id.action_login_to_map,
+                null
+            )
+        }
     }
 
     private fun onClickOkButton() {
-        firebaseAuth.sendPasswordResetEmail(binding.etEmail.text.toString().trim())
+        /*firebaseAuth.sendPasswordResetEmail(binding.etEmail.text.toString().trim())
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     toast(getString(R.string.sent_email_login))
                 } else
                     toast(getString(R.string.failed_sent_email_login))
+            }  */
+        firebaseInteractor.sendResetPasswordEmail(binding.etEmail.text.toString().trim()) { it, _ ->
+            when (it) {
+                FirebaseInteractor.SUCCESS -> {
+                    toast(getString(R.string.sent_email_login))
+                }
+                FirebaseInteractor.FAILURE -> {
+                    toast(getString(R.string.failed_sent_email_login))
+                }
             }
+        }
 
     }
 
@@ -73,7 +93,6 @@ class LoginFragment : BaseFragment() {
         onPositiveButton: () -> Unit
 
     ) {
-
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setCancelable(false)
@@ -95,11 +114,28 @@ class LoginFragment : BaseFragment() {
         if (!validateForm()) {
             return
         }
-
         showProgressDialog()
         this.hideKeyboard()
-
-        firebaseAuth
+        firebaseInteractor.register(
+            binding.etEmail.text.toString(),
+            binding.etPassword.text.toString()
+        ) { it, msg ->
+            when (it) {
+                FirebaseInteractor.SUCCESS -> {
+                    hideProgressDialog()
+                    toast(getString(R.string.registration_successful_login))
+                    findNavController().navigate(
+                        R.id.action_login_to_map,
+                        null
+                    )
+                }
+                FirebaseInteractor.FAILURE -> {
+                    hideProgressDialog()
+                    toast(msg)
+                }
+            }
+        }
+        /*firebaseAuth
             .createUserWithEmailAndPassword(
                 binding.etEmail.text.toString(),
                 binding.etPassword.text.toString()
@@ -121,7 +157,7 @@ class LoginFragment : BaseFragment() {
             .addOnFailureListener { e ->
                 hideProgressDialog()
                 toast(e.localizedMessage)
-            }
+            }*/
     }
 
     private fun loginClick() {
@@ -131,29 +167,55 @@ class LoginFragment : BaseFragment() {
 
         showProgressDialog()
         this.hideKeyboard()
-        firebaseAuth
-            .signInWithEmailAndPassword(
-                binding.etEmail.text.toString(),
-                binding.etPassword.text.toString()
-            )
-            .addOnSuccessListener {
-                hideProgressDialog()
-                toast(getString(R.string.login_successful_login))
+        firebaseInteractor.login(
+            binding.etEmail.text.toString(),
+            binding.etPassword.text.toString()
+        ) { it, msg ->
+            when (it) {
+                FirebaseInteractor.SUCCESS -> {
+                    hideProgressDialog()
+                    toast(getString(R.string.login_successful_login))
 
-                findNavController().navigate(
-                    R.id.action_login_to_map,
-                    null,
-                    navOptions {
-                        anim {
-                            enter = android.R.animator.fade_in
-                            exit = android.R.animator.fade_out
+                    findNavController().navigate(
+                        R.id.action_login_to_map,
+                        null,
+                        navOptions {
+                            anim {
+                                enter = android.R.animator.fade_in
+                                exit = android.R.animator.fade_out
+                            }
                         }
-                    }
-                )
+                    )
+                }
+                FirebaseInteractor.FAILURE -> {
+                    hideProgressDialog()
+                    toast(msg)
+                }
             }
-            .addOnFailureListener { e ->
-                hideProgressDialog()
-                toast(e.localizedMessage)
-            }
+        }
+        /* firebaseAuth
+             .signInWithEmailAndPassword(
+                 binding.etEmail.text.toString(),
+                 binding.etPassword.text.toString()
+             )
+             .addOnSuccessListener {
+                 hideProgressDialog()
+                 toast(getString(R.string.login_successful_login))
+
+                 findNavController().navigate(
+                     R.id.action_login_to_map,
+                     null,
+                     navOptions {
+                         anim {
+                             enter = android.R.animator.fade_in
+                             exit = android.R.animator.fade_out
+                         }
+                     }
+                 )
+             }
+             .addOnFailureListener { e ->
+                 hideProgressDialog()
+                 toast(e.localizedMessage)
+             }*/
     }
 }
