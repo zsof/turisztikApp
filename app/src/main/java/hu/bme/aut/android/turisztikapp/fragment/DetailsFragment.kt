@@ -17,17 +17,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
@@ -41,6 +39,7 @@ import hu.bme.aut.android.turisztikapp.data.Comment
 import hu.bme.aut.android.turisztikapp.data.Image
 import hu.bme.aut.android.turisztikapp.data.Place
 import hu.bme.aut.android.turisztikapp.databinding.FragmentDetailsBinding
+import hu.bme.aut.android.turisztikapp.databinding.NavHeaderMainBinding
 import hu.bme.aut.android.turisztikapp.extension.hideKeyboard
 import hu.bme.aut.android.turisztikapp.extension.validateNonEmpty
 import java.io.ByteArrayOutputStream
@@ -79,6 +78,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
                     .show()
             }
+
         startForPhotoResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
@@ -93,6 +93,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                     uploadImage(scaledBitmap)
                 }
             }
+
         startForPhotoFromGalleryResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
@@ -123,7 +124,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding = FragmentDetailsBinding.bind(view)
 
         binding.commentDetailsRecycler.layoutManager =
@@ -135,18 +135,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         imageAdapter = ImageAdapter(place!!.id)
         binding.imageDetailsRecycler.adapter = imageAdapter
-
-        binding.toolbar.inflateMenu(R.menu.refresh_menu)
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.refresh -> {
-                    val actionToDetails =
-                        DetailsFragmentDirections.actonDetailsToDetails(place = place!!)
-                    findNavController().navigate(actionToDetails)
-                }
-            }
-            true
-        }
 
         setToolbar()
         displayPlaceData()
@@ -232,7 +220,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                     toast(e.toString())
                     return@addSnapshotListener
                 }
-
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> commentAdapter.addComment(dc.document.toObject())
@@ -267,7 +254,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             uploadComment()
             binding.commentDetailsEditText.text.clear()
             this.hideKeyboard()
-
         }
     }
 
@@ -277,7 +263,6 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val imageInBytes = baos.toByteArray()
-
         val storageReference = FirebaseStorage.getInstance().reference
         val newImageName = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8") + ".jpg"
         val newImageRef =
@@ -324,8 +309,8 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             date = Calendar.getInstance().time
 
         )
-        val db = Firebase.firestore
 
+        val db = Firebase.firestore
         db.collection("comments")
             .add(newComment)
             .addOnSuccessListener {
@@ -341,7 +326,29 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
         binding.toolbar.setNavigationOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
+
         binding.navView.setNavigationItemSelectedListener(this)
+        val header = binding.navView.getHeaderView(0)
+        val headerBinding = NavHeaderMainBinding.bind(header)
+        headerBinding.nameTextNavHeader.text = "Üdv, $userName!"
+        Glide.with(this)
+            .load(FirebaseAuth.getInstance().currentUser?.photoUrl)
+            .placeholder(R.drawable.ic_profile)
+            .into(
+                headerBinding.imageViewNavHeader
+            )
+
+        binding.toolbar.inflateMenu(R.menu.refresh_menu)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.refresh -> {
+                    val actionToDetails =
+                        DetailsFragmentDirections.actonDetailsToDetails(place = place!!)
+                    findNavController().navigate(actionToDetails)
+                }
+            }
+            true
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

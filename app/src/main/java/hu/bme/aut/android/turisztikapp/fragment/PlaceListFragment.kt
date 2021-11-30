@@ -1,5 +1,6 @@
 package hu.bme.aut.android.turisztikapp.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -19,6 +21,7 @@ import com.google.firebase.ktx.Firebase
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.adapter.PlaceListAdapter
 import hu.bme.aut.android.turisztikapp.databinding.FragmentPlaceListBinding
+import hu.bme.aut.android.turisztikapp.databinding.NavHeaderMainBinding
 
 class PlaceListFragment : BaseFragment(),
     OnNavigationItemSelectedListener {
@@ -35,6 +38,7 @@ class PlaceListFragment : BaseFragment(),
         return inflater.inflate(R.layout.fragment_place_list, container, false)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPlaceListBinding.bind(view)
@@ -51,6 +55,11 @@ class PlaceListFragment : BaseFragment(),
             ?.let { dividerItemDecoration.setDrawable(it) }
         binding.placeList.addItemDecoration(dividerItemDecoration)
 
+        initPostsListener()
+        setToolbar()
+    }
+
+    private fun setToolbar() {
         navHostFragment =
             (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -58,6 +67,15 @@ class PlaceListFragment : BaseFragment(),
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
         binding.navView.setNavigationItemSelectedListener(this)
+        val header = binding.navView.getHeaderView(0)
+        val headerBinding = NavHeaderMainBinding.bind(header)
+        headerBinding.nameTextNavHeader.text = "Üdv, $userName!"
+        Glide.with(this)
+            .load(FirebaseAuth.getInstance().currentUser?.photoUrl)
+            .placeholder(R.drawable.ic_profile)
+            .into(
+                headerBinding.imageViewNavHeader
+            )
 
         binding.toolbar.inflateMenu(R.menu.search_menu)
         binding.toolbar.setOnMenuItemClickListener {
@@ -89,7 +107,6 @@ class PlaceListFragment : BaseFragment(),
             }
             true
         }
-        initPostsListener()
     }
 
     private fun initPostsListener() {

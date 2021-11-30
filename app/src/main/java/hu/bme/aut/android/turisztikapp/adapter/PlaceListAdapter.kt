@@ -8,7 +8,6 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -70,7 +69,6 @@ class PlaceListAdapter :
         }
     }
 
-    @DrawableRes
     private fun getImageResource(category: Category?) = when (category) {
         Category.Museum -> R.drawable.ic_museum
         Category.Library -> R.drawable.ic_library

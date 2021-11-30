@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -72,6 +71,7 @@ class AddNewPlaceDialogFragment : DialogFragment() {
                 } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
                     .show()
             }
+
         startForPhotoResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == RESULT_OK) {
@@ -90,6 +90,7 @@ class AddNewPlaceDialogFragment : DialogFragment() {
                     binding.placeGalleryButton.setImageResource(R.drawable.ic_gallery)
                 }
             }
+
         startForPhotoFromGalleryResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == RESULT_OK) {
@@ -267,8 +268,8 @@ class AddNewPlaceDialogFragment : DialogFragment() {
     }
 
     private fun showRationaleDialog(
-        @SuppressLint("SupportAnnotationUsage") @StringRes title: String = getString(R.string.attention),
-        @StringRes explanation: Int,
+        @SuppressLint("SupportAnnotationUsage") title: String = getString(R.string.attention),
+        explanation: Int,
         onPositiveButton: () -> Unit,
         onNegativeButton: () -> Unit = this::dismiss
     ) {

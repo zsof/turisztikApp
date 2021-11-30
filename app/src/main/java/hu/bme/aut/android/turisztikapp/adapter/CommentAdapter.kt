@@ -19,7 +19,6 @@ class CommentAdapter(private val id: String) :
         val commentText: TextView = binding.rowCommentText
         val userNameText: TextView = binding.userName
         var commentItem: Comment? = null
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

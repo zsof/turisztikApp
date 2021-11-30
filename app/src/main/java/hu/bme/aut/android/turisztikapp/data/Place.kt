@@ -12,4 +12,3 @@ data class Place(
     val image: String? = "",
     val category: Category? = Category.Museum
 ) : Serializable
-

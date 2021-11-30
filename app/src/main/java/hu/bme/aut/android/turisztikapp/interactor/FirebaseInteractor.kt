@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 
-class FirebaseInteractor() {
+open class FirebaseInteractor() {
 
     companion object {
         const val SUCCESS = "Successful"
@@ -18,7 +18,6 @@ class FirebaseInteractor() {
 
     private val firebaseUser: FirebaseUser?
         get() = FirebaseAuth.getInstance().currentUser
-
 
     fun userLoggedIn(): Boolean {
         if (firebaseUser?.email != null) {
@@ -48,9 +47,8 @@ class FirebaseInteractor() {
                     .build()
                 firebaseUser?.updateProfile(profileChangeRequest)
             }
-            .addOnFailureListener {
-                fv(FAILURE, it.localizedMessage)
-
+            .addOnFailureListener { e ->
+                fv(FAILURE, e.localizedMessage)
             }
     }
 
@@ -60,8 +58,8 @@ class FirebaseInteractor() {
             .addOnSuccessListener {
                 fv(SUCCESS, null)
             }
-            .addOnFailureListener {
-                fv(FAILURE, it.localizedMessage)
+            .addOnFailureListener { e ->
+                fv(FAILURE, e.localizedMessage)
             }
     }
 
@@ -72,12 +70,10 @@ class FirebaseInteractor() {
                 .addOnSuccessListener {
                     fv(SUCCESS, null)
                 }
-                .addOnFailureListener {
-                    fv(FAILURE, it.localizedMessage)
+                .addOnFailureListener { e ->
+                    fv(FAILURE, e.localizedMessage)
                 }
-
         }
-
     }
 
     fun sendVerifyEmail(fv: (String, String?) -> Unit) {
@@ -103,8 +99,8 @@ class FirebaseInteractor() {
             ?.addOnSuccessListener {
                 fv(SUCCESS, null)
             }
-            ?.addOnFailureListener {
-                fv(FAILURE, it.localizedMessage)
+            ?.addOnFailureListener { e ->
+                fv(FAILURE, e.localizedMessage)
             }
     }
 
@@ -113,8 +109,8 @@ class FirebaseInteractor() {
             ?.addOnSuccessListener {
                 fv(SUCCESS, null)
             }
-            ?.addOnFailureListener {
-                fv(FAILURE, it.localizedMessage)
+            ?.addOnFailureListener { e ->
+                fv(FAILURE, e.localizedMessage)
             }
     }
 
@@ -123,10 +119,8 @@ class FirebaseInteractor() {
             ?.addOnSuccessListener {
                 fv(SUCCESS, null)
             }
-            ?.addOnFailureListener {
-                fv(FAILURE, it.localizedMessage)
+            ?.addOnFailureListener { e ->
+                fv(FAILURE, e.localizedMessage)
             }
     }
-
-
 }

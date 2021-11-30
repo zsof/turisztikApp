@@ -3,7 +3,7 @@
     <item
         android:id="@+id/menu_map_places"
         android:icon="@drawable/ic_budapest"
-        android:title="@string/l_tnival_k" />
+        android:title="@string/seesighting" />
     <item
         android:id="@+id/menu_map_settings"
         android:icon="@drawable/ic_settings"
@@ -12,6 +12,6 @@
     <item
         android:id="@+id/menu_map_logout"
         android:icon="@drawable/ic_logout"
-        android:title="@string/kijelentkez_s" />
+        android:title="@string/logout" />
 
 </menu>

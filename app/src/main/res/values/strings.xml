@@ -1,29 +1,21 @@
 <resources>
     <string name="app_name">TurisztikApp</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="title">TurisztikApp</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_post_fragment">PostFragment</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="new_place">Új helyszín</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="t_rk_p">Térkép</string>
-    <string name="be_ll_t_sok">Beállítások</string>
-    <string name="kijelentkez_s">Kijelentkezés</string>
-    <string name="n_v">Név</string>
-    <string name="c_m">Cím</string>
-    <string name="le_r_s">Leírás</string>
-    <string name="kateg_ria">Kategória</string>
+    <string name="map">Térkép</string>
+    <string name="logout">Kijelentkezés</string>
+    <string name="name">Név</string>
+    <string name="address">Cím</string>
+    <string name="description">Leírás</string>
+    <string name="category">Kategória</string>
     <string name="ok">Ok</string>
     <string name="cancel">Törlés</string>
-    <string name="l_tnival_k">Látnivalók</string>
+    <string name="seesighting">Látnivalók</string>
     <string name="contacts_permission_explanation">Az alkalmazásnak szüksége van a tárhely használatára.</string>
     <string name="logedin">Bejelentkezve marad?</string>
     <string name="attention">Figyelem!</string>
@@ -38,31 +30,6 @@
     <string name="settings">Beállítások</string>
     <string name="password">Jelszó</string>
     <string name="comment_text">Hozzászólás</string>
-
-    <string-array name="category_items">
-        <item>Múzeum</item>
-        <item>Könyvtár</item>
-        <item>Kiállítás</item>
-        <item>Templom</item>
-        <item>Állatkert</item>
-        <item>Vár</item>
-
-
-    </string-array>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="empty_values_add_new_place">Üres név vagy cím</string>
     <string name="failure_massage_new_camera_image">Something went wrong</string>
     <string name="havent_picked_photo_add_new">Nem választottál fotót!</string>
@@ -101,5 +68,15 @@
     <string name="login">Bejelentkezés</string>
     <string name="register">Regisztráció</string>
     <string name="required">Kötelező</string>
-    <string name="reset_email_sent">Email elküdlve</string>
+    <string name="reset_email_sent">Email elküldve</string>
+
+    <string-array name="category_items">
+        <item>Múzeum</item>
+        <item>Könyvtár</item>
+        <item>Kiállítás</item>
+        <item>Templom</item>
+        <item>Állatkert</item>
+        <item>Vár</item>
+    </string-array>
+
 </resources>

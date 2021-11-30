@@ -31,6 +31,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.turisztikapp.R
 import hu.bme.aut.android.turisztikapp.databinding.FragmentSettingsBinding
+import hu.bme.aut.android.turisztikapp.databinding.NavHeaderMainBinding
 import hu.bme.aut.android.turisztikapp.interactor.FirebaseInteractor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -53,7 +54,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     private lateinit var navHostFragment: NavHostFragment
     private var reAuthSuccess: Boolean = false
     private lateinit var galleryPermRequest: ActivityResultLauncher<String>
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,7 +80,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         binding = FragmentSettingsBinding.bind(view)
 
         currentUser?.let {
-
             binding.profileName.text = it.displayName?.capitalize()
             binding.profileEmail.text = it.email
             Glide.with(this)
@@ -110,14 +109,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                     }
                 }
             }
-            /* currentUser?.sendEmailVerification()
-                 ?.addOnCompleteListener {
-                     if (it.isSuccessful) {
-                         toast(getString(R.string.verify_email_settings))
-                         binding.emailVerify.text =
-                             getString(R.string.verify_email_textview_settings)
-                     } else toast(it.exception?.localizedMessage)
-                 }*/
         }
 
         binding.profileNameChangeIcon.setOnClickListener {
@@ -165,26 +156,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                     }
                 }
             }
-            /*currentUser?.let {
-                val credential =
-                    EmailAuthProvider.getCredential(it.email!!, binding.etReAuth.text.toString())
-
-                it.reauthenticate(credential)
-                    .addOnSuccessListener {
-                        toast(getString(R.string.authentication_successful_settings))
-                        binding.etReAuth.visibility = View.GONE
-                        binding.btnAuth.visibility = View.GONE
-                        binding.til.visibility = View.GONE
-
-                        reAuthSuccess = true
-                        binding.profileAuthCheckbox.isChecked = true
-                    }
-                    .addOnFailureListener { e ->
-                        toast(e.localizedMessage)
-
-                        reAuthSuccess = false
-                    }
-            }*/
         }
 
         binding.btnSave.setOnClickListener {
@@ -201,18 +172,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                     }
                 }
             }
-            /*val updates = UserProfileChangeRequest.Builder()
-            if (!binding.profileName.text.isNullOrEmpty())
-                updates.displayName = binding.profileName.text.toString()
-            if (newImageUri != null)
-                updates.photoUri = newImageUri
-            currentUser?.updateProfile(updates.build())
-                ?.addOnSuccessListener {
-                    toast(getString(R.string.update_profile_settings))
-                }
-                ?.addOnFailureListener { e ->
-                    toast(e.localizedMessage)
-                }*/
         }
 
         binding.profileImage.setOnClickListener {
@@ -224,7 +183,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     private fun showImageDialog(
         title: String = getString(R.string.choose_image),
     ) {
-
         val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setPositiveButton(getString(R.string.gallery)) { dialog, _ ->
@@ -245,7 +203,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         inputTextHint: String?,
         inputTextType: Int
     ) {
-
         val inputText = EditText(context)
         inputText.hint = inputTextHint
         inputText.inputType = inputTextType
@@ -288,16 +245,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                                 toast(msg)
                             }
                         }
-
                     }
-                /* currentUser?.updateEmail(inputText.text.toString())
-                     ?.addOnSuccessListener {
-                         binding.profileEmail.text = inputText.text.toString()
-                         toast(getString(R.string.email_successful_refresh_settings))
-                     }
-                     ?.addOnFailureListener { e ->
-                         toast(e.localizedMessage)
-                     }*/
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
@@ -327,13 +275,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                             }
                         }
                     }
-                /* currentUser?.updatePassword(inputText.text.toString())
-                     ?.addOnSuccessListener {
-                         toast(getString(R.string.password_update_settings))
-                     }
-                     ?.addOnFailureListener { e ->
-                         toast(e.localizedMessage)
-                     }*/
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onNegativeButton() }
             .setView(inputText)
@@ -419,7 +360,6 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
                 newImageUri = it
                 binding.btnSave.isEnabled = true
             }
-
     }
 
     private fun setToolbar() {
@@ -430,6 +370,15 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
         binding.navView.setNavigationItemSelectedListener(this)
+        val header = binding.navView.getHeaderView(0)
+        val headerBinding = NavHeaderMainBinding.bind(header)
+        headerBinding.nameTextNavHeader.text = "Üdv, ${currentUser?.displayName}!"
+        Glide.with(this)
+            .load(currentUser?.photoUrl)
+            .placeholder(R.drawable.ic_profile)
+            .into(
+                headerBinding.imageViewNavHeader
+            )
     }
 
 

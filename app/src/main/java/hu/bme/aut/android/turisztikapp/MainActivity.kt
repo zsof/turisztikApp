@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,7 +11,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import hu.bme.aut.android.turisztikapp.databinding.ActivityMainBinding
 import hu.bme.aut.android.turisztikapp.fragment.BaseFragment
-import okhttp3.logging.HttpLoggingInterceptor
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,9 +29,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-
     }
-
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)

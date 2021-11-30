@@ -78,6 +78,7 @@ class MapFragment : BaseFragment(),
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationPermRequest =
@@ -129,7 +130,6 @@ class MapFragment : BaseFragment(),
         }
     }
 
-
     private fun getPlaces() {
         if (!::map.isInitialized)
             return
@@ -137,13 +137,6 @@ class MapFragment : BaseFragment(),
             for (dc in it.documents) {
                 val place = dc.toObject<Place>()
                 place ?: continue
-
-                /*location = Location(LocationManager.GPS_PROVIDER)
-                location.latitude=place.geoPoint.latitude
-                location.longitude=place.geoPoint.longitude
-
-                distance.add(location.distanceTo(map.myLocation) / 1000)*/
-
 
                 val marker =
                     when (place.category) {
@@ -231,7 +224,6 @@ class MapFragment : BaseFragment(),
         }
     }
 
-
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (!::map.isInitialized) {
@@ -264,6 +256,7 @@ class MapFragment : BaseFragment(),
         } else {
             enableMyLocation()
         }
+
     }
 
     private fun showRationaleDialog(

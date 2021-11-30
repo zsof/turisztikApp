@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/n_v" />
+            android:text="@string/name" />
 
         <EditText
             android:id="@+id/placeNameEditText"
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/c_m" />
+            android:text="@string/address" />
 
         <EditText
             android:id="@+id/placeAddressEditText"
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/le_r_s" />
+            android:text="@string/description" />
 
         <EditText
             android:id="@+id/placeDescEditText"
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/kateg_ria" />
+            android:text="@string/category" />
 
         <Spinner
             android:id="@+id/placeCategorySpinner"
