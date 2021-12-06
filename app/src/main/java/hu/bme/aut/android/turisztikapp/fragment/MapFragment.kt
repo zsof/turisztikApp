@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +37,10 @@ class MapFragment : BaseFragment(),
     private lateinit var map: GoogleMap
     private lateinit var locationPermRequest: ActivityResultLauncher<String>
     private lateinit var location: Location
+
+    companion object {
+        const val TAG = "MapFragment"
+    }
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -78,15 +83,18 @@ class MapFragment : BaseFragment(),
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 if (it) {
                     toast(getString(R.string.permission_granted))
+                    Log.d(TAG, "Permission granted for location data")
                     enableMyLocation()
-                } else toast(getString(R.string.permission_denied))
+                } else {
+                    toast(getString(R.string.permission_denied))
+                    Log.d(TAG, "Permission denied for location data")
+                }
             }
     }
 
@@ -218,8 +226,6 @@ class MapFragment : BaseFragment(),
                         }
                     }
                 marker?.tag = place
-
-
             }
         }
     }
@@ -231,7 +237,6 @@ class MapFragment : BaseFragment(),
         }
         map.isMyLocationEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
-
     }
 
     private fun handleFineLocationPermission() {
@@ -240,7 +245,6 @@ class MapFragment : BaseFragment(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     activity as AppCompatActivity,
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -256,7 +260,6 @@ class MapFragment : BaseFragment(),
         } else {
             enableMyLocation()
         }
-
     }
 
     private fun showRationaleDialog(

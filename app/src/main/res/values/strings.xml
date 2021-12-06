@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TurisztikApp</string>
     <string name="title">TurisztikApp</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">Béla</string>
     <string name="action_settings">Settings</string>
     <string name="new_place">Új helyszín</string>
     <string name="menu_home">Home</string>

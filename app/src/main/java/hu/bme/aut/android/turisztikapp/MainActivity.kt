@@ -45,9 +45,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val f = currentFragment
-        if (f !is BaseFragment || f.onBackPressed()) {
-            if (!findNavController(R.id.nav_host_fragment).navigateUp()) {
-                super.onBackPressed()
+        when {
+            f !is BaseFragment || f.onBackPressed() -> {
+                if (!findNavController(R.id.nav_host_fragment).navigateUp()) {
+                    super.onBackPressed()
+                }
             }
         }
     }

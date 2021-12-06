@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -61,6 +62,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
 
     companion object {
         const val PLACE = "place"
+        const val TAG = "DetailsFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,9 +76,12 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 if (it) {
                     Toast.makeText(context, R.string.permission_granted, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission granted for gallery use")
                     uploadPhotoFromGallery()
-                } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
-                    .show()
+                } else {
+                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission denied for gallery use")
+                }
             }
 
         startForPhotoResult =
@@ -291,9 +296,11 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                     .add(newImage)
                     .addOnSuccessListener {
                         toast(getString(R.string.image_uploaded_details))
+                        Log.d(TAG, "Image successfully uploaded")
                     }
                     .addOnFailureListener { e ->
                         toast(e.localizedMessage)
+                        Log.d(TAG, "Failed to upload image")
                     }
             }
     }
@@ -315,8 +322,12 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
             .add(newComment)
             .addOnSuccessListener {
                 toast(getString(R.string.comment_created_details))
+                Log.d(TAG, "Comment successfully uploaded")
             }
-            .addOnFailureListener { e -> toast(e.localizedMessage) }
+            .addOnFailureListener { e ->
+                toast(e.localizedMessage)
+                Log.d(TAG, "Failed to upload comment")
+            }
     }
 
     private fun setToolbar() {

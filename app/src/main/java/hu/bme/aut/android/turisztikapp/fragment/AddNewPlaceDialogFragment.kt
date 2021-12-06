@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.ArrayAdapter
@@ -43,6 +44,7 @@ class AddNewPlaceDialogFragment : DialogFragment() {
 
     companion object {
         const val LATLNG = "latLng"
+        const val TAG = "AddNePlaceDialogFragment"
     }
 
     private lateinit var binding: DialogAddNewPlaceBinding
@@ -67,9 +69,12 @@ class AddNewPlaceDialogFragment : DialogFragment() {
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 if (it) {
                     Toast.makeText(context, R.string.permission_granted, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission granted for gallery use")
                     openGalleryForImage()
-                } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
-                    .show()
+                } else {
+                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission denied for gallery use")
+                }
             }
 
         startForPhotoResult =
@@ -197,9 +202,13 @@ class AddNewPlaceDialogFragment : DialogFragment() {
         db.collection("places")
             .add(newPlace!!)
             .addOnSuccessListener {
+                Log.d(TAG, "Place successfully uploaded")
+
             }
             .addOnFailureListener { e ->
                 Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+                Log.d(TAG, "Failed to upload place")
+
             }
     }
 
@@ -259,9 +268,13 @@ class AddNewPlaceDialogFragment : DialogFragment() {
                     db.collection("images")
                         .add(newImage)
                         .addOnSuccessListener {
+                            Log.d(TAG, "Image successfully uploaded")
+
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+                            Log.d(TAG, "Failed to upload image")
+
                         }
                 }
             }

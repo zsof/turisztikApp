@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textSize="20sp"
+        android:inputType="textPersonName"
         android:layout_gravity="center_vertical"
         tools:text="@string/nav_header_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

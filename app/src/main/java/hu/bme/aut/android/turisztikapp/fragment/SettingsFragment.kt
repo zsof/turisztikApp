@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -44,6 +45,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
     companion object {
         const val REQUEST_CODE_CAMERA = 100
         const val REQUEST_CODE_GALLERY = 101
+        const val TAG = "SettingFragment"
     }
 
     private var newImageUri: Uri? = null
@@ -69,9 +71,12 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 if (it) {
                     Toast.makeText(context, R.string.permission_granted, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission granted for gallery use")
                     uploadPhotoFromGallery()
-                } else Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT)
-                    .show()
+                } else {
+                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "Permission denied for gallery use")
+                }
             }
     }
 
@@ -79,8 +84,8 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSettingsBinding.bind(view)
 
-        currentUser?.let {
-            binding.profileName.text = it.displayName?.capitalize()
+        currentUser?.let { it ->
+            binding.profileName.text = it.displayName?.replaceFirstChar { it.uppercase() }
             binding.profileEmail.text = it.email
             Glide.with(this)
                 .load(it.photoUrl)
@@ -159,7 +164,7 @@ class SettingsFragment : BaseFragment(), NavigationView.OnNavigationItemSelected
         }
 
         binding.btnSave.setOnClickListener {
-            firebaseInteractor.saveProfile(
+            firebaseInteractor.updateProfile(
                 binding.profileName.text.toString(),
                 newImageUri
             ) { it, msg ->
