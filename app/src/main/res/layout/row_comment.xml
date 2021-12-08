@@ -26,20 +26,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userName"
         tools:text="Hozzászólás" />
-
-
-    <!-- <TextView
-         android:id="@+id/rowCommentRate"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content" android:textSize="20sp"
-         android:textStyle="italic"
-         android:textColor="@color/black"
-         app:layout_constraintBottom_toBottomOf="parent"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintHorizontal_bias="0.837"
-         app:layout_constraintStart_toEndOf="@+id/rowCommentText"
-         app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintVertical_bias="0.005"
-         tools:text="3.0" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>

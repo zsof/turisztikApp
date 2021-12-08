@@ -228,7 +228,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> commentAdapter.addComment(dc.document.toObject())
-                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
+                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())
                         DocumentChange.Type.REMOVED -> commentAdapter.removeComment(dc.document.toObject())
                     }
                 }
@@ -244,7 +244,7 @@ class DetailsFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedL
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> imageAdapter.addImage(dc.document.toObject())
-                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
+                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())
                         DocumentChange.Type.REMOVED -> imageAdapter.removeImage(dc.document.toObject())
                     }
                 }

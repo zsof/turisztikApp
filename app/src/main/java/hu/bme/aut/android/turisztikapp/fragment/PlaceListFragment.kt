@@ -120,7 +120,7 @@ class PlaceListFragment : BaseFragment(),
                 for (dc in snapshots!!.documentChanges) {
                     when (dc.type) {
                         DocumentChange.Type.ADDED -> placeListAdapter.addPlace(dc.document.toObject())
-                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())  //TODO
+                        DocumentChange.Type.MODIFIED -> toast(dc.document.data.toString())
                         DocumentChange.Type.REMOVED -> placeListAdapter.removePlace(dc.document.toObject())
                     }
                 }
