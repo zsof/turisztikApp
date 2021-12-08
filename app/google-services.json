@@ -1,0 +1,213 @@
+{
+  "project_info": {
+    "project_number": "689331140626",
+    "project_id": "turisztika-62f3c",
+    "storage_bucket": "turisztika-62f3c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:aeb201405e77b7598dc0cb",
+        "android_client_info": {
+          "package_name": "com.example.blankkoin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:aa606ec19bbb48a58dc0cb",
+        "android_client_info": {
+          "package_name": "com.example.naproba_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:45a1c9f4614b76c28dc0cb",
+        "android_client_info": {
+          "package_name": "com.example.navproba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:5debaf04e629e5fc8dc0cb",
+        "android_client_info": {
+          "package_name": "hu.bme.aut.android.navprobaregiandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:aa5aa19b801d66d98dc0cb",
+        "android_client_info": {
+          "package_name": "hu.bme.aut.android.navregi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:18a5568ad412f9288dc0cb",
+        "android_client_info": {
+          "package_name": "hu.bme.aut.android.navregiproba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689331140626:android:47ae5f1a567a84e88dc0cb",
+        "android_client_info": {
+          "package_name": "hu.bme.aut.android.turisztikapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqv_22uFwx0BQJmi9kK0cKAeJM9tPI1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689331140626-1l28bp62ir53o9jq9nkof35l8j1hb4g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

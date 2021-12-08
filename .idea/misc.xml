@@ -1,5 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_add_image.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_arrow_left.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_art_gallery.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_castle.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_change.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_password.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_profile.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_refreshwhite.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-anydpi/ic_send.xml" value="0.108" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-hdpi/listitem_backgroung.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-hdpi/square_background_text.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/ic_launcher_main_foreground.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/ic_navigate_menu.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/recyclerview_divider.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/drawable/side_nav_bar.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/app_bar_posts.xml" value="0.17346014492753623" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/dialog_add_new_place.xml" value="0.4544287548138639" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_base.xml" value="0.16875" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_details.xml" value="0.16129032258064516" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_details_image.xml" value="0.37302423603793466" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_login.xml" value="0.1940928270042194" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_map.xml" value="0.16666666666666666" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_place_list.xml" value="0.16666666666666666" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_profile.xml" value="0.3333333333333333" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/fragment_settings.xml" value="0.24269005847953215" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/menu_layout.xml" value="0.17346014492753623" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/nav_header_main.xml" value="0.4466666666666667" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_comment.xml" value="0.3333333333333333" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_image.xml" value="0.31592039800995025" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/row_places.xml" value="0.31724137931034485" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/layout/settings_preferences.xml" value="0.17346014492753623" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/app_bar_menu.xml" value="0.16875" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/menu_map.xml" value="0.11574074074074074" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/refresh_menu.xml" value="0.16666666666666666" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/menu/search_menu.xml" value="0.15520833333333334" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_main.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_main_round.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
+        <entry key="..\:/Adat/BME/7_felev/Szakdoga/turisztikApp/app/src/main/res/xml/root_preferences.xml" value="0.16875" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

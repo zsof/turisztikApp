@@ -1,19 +1,82 @@
 <resources>
     <string name="app_name">TurisztikApp</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_post_fragment">PostFragment</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="title">TurisztikApp</string>
+    <string name="nav_header_title">Béla</string>
     <string name="action_settings">Settings</string>
-
+    <string name="new_place">Új helyszín</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="t_rk_p">Térkép</string>
-    <string name="be_ll_t_sok">Beállítások</string>
-    <string name="kijelentkez_s">Kijelentkezés</string>
+    <string name="map">Térkép</string>
+    <string name="logout">Kijelentkezés</string>
+    <string name="name">Név</string>
+    <string name="address">Cím</string>
+    <string name="description">Leírás</string>
+    <string name="category">Kategória</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Törlés</string>
+    <string name="seesighting">Látnivalók</string>
+    <string name="contacts_permission_explanation">Az alkalmazásnak szüksége van a tárhely használatára.</string>
+    <string name="logedin">Bejelentkezve marad?</string>
+    <string name="attention">Figyelem!</string>
+    <string name="ok_permisson_dialog_map">OK</string>
+    <string name="exit_permission_diaog_map">Exit</string>
+    <string name="explanation_permission_location">Az eszköznek szüksége van az Ön helyadatainak megjelenítéséhez</string>
+    <string name="permission_denied">Endegély megtagadva</string>
+    <string name="permission_granted">Engedély megadva</string>
+    <string name="not_verify">Nincs megerősítve</string>
+    <string name="verifyEmail">Megerősítés</string>
+    <string name="forgetting_password"><u>Elfelejtette jelszavát?</u></string>
+    <string name="settings">Beállítások</string>
+    <string name="password">Jelszó</string>
+    <string name="comment_text">Hozzászólás</string>
+    <string name="empty_values_add_new_place">Üres név vagy cím</string>
+    <string name="failure_massage_new_camera_image">Something went wrong</string>
+    <string name="havent_picked_photo_add_new">Nem választottál fotót!</string>
+    <string name="choose_image">Válaszd ki, honnan töltöd fel a képet!</string>
+    <string name="gallery">Galéria</string>
+    <string name="camera">Kamera</string>
+    <string name="descreption_details">Leírás</string>
+    <string name="empty_comment_details">Nincs komment</string>
+    <string name="image_uploaded_details">Kép feltöltve, lehet frissítened kell az oldalt!</string>
+    <string name="comment_created_details">Komment hozzáadva</string>
+    <string name="descreption_textview_details">Leírás</string>
+    <string name="empty_email_login">Nincs megadva Email-cím</string>
+    <string name="forgot_password_login">Ha elfelejtette jelszavát, nyomjon a Küldés gombra. Az emailben kapott linken keresztül meg tudja változtatni jelszavát!</string>
+    <string name="sent_email_login">Email elküldve</string>
+    <string name="failed_sent_email_login">Sikertelen küldés</string>
+    <string name="new_password_sentding_login">Új jelszó küldése</string>
+    <string name="send_login">Küldés</string>
+    <string name="cancel_login">Mégse</string>
+    <string name="registration_successful_login">Regisztráció sikeres</string>
+    <string name="login_successful_login">Bejelentkezés sikeres</string>
+    <string name="login_not_successful_login">Login is not successful</string>
+    <string name="search">Keresés</string>
+    <string name="verify_email_textview_settings">Megerősítő email elküldve</string>
+    <string name="verify_email_settings">Megerősítő email elküldve!</string>
+    <string name="name_settings">Becenév</string>
+    <string name="name_hint_settings">Név</string>
+    <string name="authentication_successful_settings">Sikeres authentikáció!</string>
+    <string name="update_profile_settings">Profil frissítve</string>
+    <string name="change_email_settings">Email-cím változtatás</string>
+    <string name="new_email_hint_settings">Új Email-cím</string>
+    <string name="email_successful_refresh_settings">Email-cím sikeresen frisstíve!</string>
+    <string name="change_password">Jelszó változtatás</string>
+    <string name="new_password_hint">Új jelszó</string>
+    <string name="password_update_settings">Jelszó sikeresen frisstíve!</string>
+    <string name="wrong_message_settings">Valami hiba történt!</string>
+    <string name="login">Bejelentkezés</string>
+    <string name="register">Regisztráció</string>
+    <string name="required">Kötelező</string>
+    <string name="reset_email_sent">Email elküldve</string>
+
+    <string-array name="category_items">
+        <item>Múzeum</item>
+        <item>Könyvtár</item>
+        <item>Kiállítás</item>
+        <item>Templom</item>
+        <item>Állatkert</item>
+        <item>Vár</item>
+    </string-array>
+
 </resources>

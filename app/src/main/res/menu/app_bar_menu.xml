@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_map"
-        android:icon="@drawable/map"
-        android:title="@string/t_rk_p" />
+        android:id="@+id/menu_places"
+        android:icon="@drawable/ic_budapest"
+        android:title="@string/seesighting" />
     <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/settings"
-        android:title="@string/be_ll_t_sok" />
+        android:id="@+id/menu_map"
+        android:icon="@drawable/ic_map"
+        android:title="@string/map" />
+
     <item
-        android:id="@+id/nav_logout"
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings" />
+    <item
+        android:id="@+id/menu_logout"
         android:icon="@drawable/ic_logout"
-        android:title="@string/kijelentkez_s" />
+        android:title="@string/logout" />
+
 </menu>

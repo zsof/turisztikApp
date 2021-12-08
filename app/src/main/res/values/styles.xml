@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TOOLBAR THEME -->
+    <style name="ToolbarTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <!-- Color of the title text in the Toolbar -->
+        <item name="android:textColorPrimary">@color/teal_200</item>
+    </style>
+
+</resources>
